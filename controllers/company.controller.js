@@ -37,12 +37,14 @@ module.exports = {
             const {company_id} = req.params;
             console.log(company_id, 'req params id');
 
-            const companyIdString = company_id.toString();
+            const companyIdString = _id.toString();
             console.log(companyIdString, 'company id to string');
 
-            if (_id !== companyIdString) {
+            if (company_id !== companyIdString) {
                 console.log(' not equals')
                 return next(new ApiError('Access token doesnt belong to the company you are trying to update'))
+            }else{
+                console.log('equals');
             }
 
             const company = await companyService.updateCompany(company_id, req.body);
