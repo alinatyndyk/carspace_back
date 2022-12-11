@@ -5,6 +5,14 @@ module.exports = {
         return User.find()
     },
 
+    getUserById(_id) {
+        return User.findById(_id)
+    },
+
+    getOneByParams(filter) {
+        return User.findOne(filter);
+    },
+
     createUser(userObject) {
         return User.create(userObject)
     },

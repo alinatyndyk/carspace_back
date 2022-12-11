@@ -48,7 +48,7 @@ module.exports = {
             }
 
             const company = await companyService.updateCompany(company_id, req.body);
-
+            // todo no console logs
             res.json(company);
         } catch (e) {
             next(e);

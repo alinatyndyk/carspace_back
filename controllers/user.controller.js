@@ -9,6 +9,16 @@ module.exports = {
         }
     },
 
+    getUserById: async (req, res, next) => {
+        try {
+            const {user_id} = req.params;
+            const user = await userService.getUserById(user_id);
+            res.json(user)
+        } catch (e) {
+            next(e)
+        }
+    },
+
     createUser: async (req, res, next) => {
         try {
             const user = await userService.createUser(req.body);

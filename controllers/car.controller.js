@@ -1,4 +1,5 @@
 const {carService, companyService} = require("../services");
+const {ApiError} = require("../errors");
 
 module.exports = {
     getAllCars: async (req, res, next) => {
@@ -34,7 +35,16 @@ module.exports = {
 
     updateCar: async (req, res, next) => {
         try {
+            const {_id} = req.tokenInfo.company; // id of tokens company
             const {car_id} = req.params;
+
+            const carForUpdate = await carService.getCarById(car_id);
+            const company_id = carForUpdate.company;
+
+            if (_id.toString() !== company_id.toString()) {
+                return next(new ApiError('Access token doesnt belong to the car you are trying to update'))
+            }
+
             const car = await carService.updateCar(car_id, req.body);
             res.json(car);
         } catch (e) {
@@ -44,7 +54,16 @@ module.exports = {
 
     deleteCar: async (req, res, next) => {
         try {
+            const {_id} = req.tokenInfo.company;
             const {car_id} = req.params;
+
+            const carForDelete = await carService.getCarById(car_id);
+            const company_id = carForDelete.company;
+
+            if (_id.toString() !== company_id.toString()) {
+                return next(new ApiError('Access token doesnt belong to the car you are trying to delete'))
+            }
+
             const car = await carService.deleteCar(car_id);
             res.json(car);
         } catch (e) {

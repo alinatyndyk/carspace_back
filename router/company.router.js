@@ -1,19 +1,17 @@
 const {Router} = require('express');
 
 const {companyController} = require("../controllers");
-const {commonValidators} = require("../validators");
-const {companyMldwr, authMldwr} = require("../middlewares");
+const {companyMldwr, authMldwr, commonMldwr} = require("../middlewares");
 
 const companyRouter = Router();
 
 companyRouter.get('/',
-
-    companyController.getAllCompanies); // only admin
+    companyController.getAllCompanies); // everyone
 
 companyRouter.get('/:company_id',
-    commonValidators.validIdMldwr('company_id', 'params'),
+    commonMldwr.validIdMldwr('company_id', 'params'),
     companyMldwr.isCompanyPresent(),
-    companyController.getCompanyById); //only admin
+    companyController.getCompanyById); // everyone
 
 companyRouter.post('/',
     //access admin
@@ -22,11 +20,14 @@ companyRouter.post('/',
     companyController.createCompany); //only admin
 
 companyRouter.patch('/:company_id',
-    commonValidators.validIdMldwr('company_id', 'params'),
-    authMldwr.isAccessTokenValid,
+    commonMldwr.validIdMldwr('company_id', 'params'),
+    // authMldwr.isAccessTokenValidCompany,
     companyMldwr.companyBodyValid('updateCompanyValidator'),
-    companyController.updateCompany); //only a company with the same id
+    companyController.updateCompany); //only a company with the same id --done
 
-companyRouter.delete('/:company_id', companyController.deleteCompany); //only admin
+companyRouter.delete('/:company_id',
+    commonMldwr.validIdMldwr('company_id', 'params'),
+    //access admin
+    companyController.deleteCompany); //only admin
 
 module.exports = companyRouter;
