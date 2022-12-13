@@ -1,6 +1,6 @@
 const Joi = require('joi');
 
-const brandValidator = Joi.string().valid('bmw', 'audi', 'mers').min(2).max(30).trim();
+const brandValidator = Joi.string().min(2).max(30).trim(); //todo
 const modelValidator = Joi.string().min(2).max(30).trim();
 const yearValidator = Joi.number();
 

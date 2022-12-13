@@ -24,7 +24,7 @@ const updateUserValidator = Joi.object({
     name: nameValidator,
     age: ageValidator,
     email: emailValidator,
-    driving_license_country: licenseValidator.required(),
+    driving_license_country: licenseValidator,
     password: passValidator,
 
 })

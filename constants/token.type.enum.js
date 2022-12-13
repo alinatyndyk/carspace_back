@@ -1,4 +1,13 @@
 module.exports = {
     ACCESS: 'access',
-    REFRESH: 'refresh'
+    REFRESH: 'refresh',
+    ACCESS_USER: 'access_user',
+    REFRESH_USER: 'refresh_user',
+    ACCESS_COMPANY: 'access_company',
+    REFRESH_COMPANY: 'refresh_company',
+    ACCESS_ADMIN: 'access_admin',
+    REFRESH_ADMIN: 'refresh_admin',
+
+    FORGOT_PASSWORD: 'forgot_password',
+    ORDER_CAR: 'order_car'
 }

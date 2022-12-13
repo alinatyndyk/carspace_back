@@ -33,22 +33,15 @@ module.exports = {
     updateCompany: async (req, res, next) => {
         try {
             const {_id} = req.tokenInfo.company;
-            console.log(_id, 'token info company id');
             const {company_id} = req.params;
-            console.log(company_id, 'req params id');
 
             const companyIdString = _id.toString();
-            console.log(companyIdString, 'company id to string');
 
             if (company_id !== companyIdString) {
-                console.log(' not equals')
                 return next(new ApiError('Access token doesnt belong to the company you are trying to update'))
-            }else{
-                console.log('equals');
             }
 
             const company = await companyService.updateCompany(company_id, req.body);
-            // todo no console logs
             res.json(company);
         } catch (e) {
             next(e);

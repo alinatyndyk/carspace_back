@@ -13,10 +13,6 @@ module.exports = {
         return AuthCompany.findOne(filter);
     },
 
-    getAllCompanyAuth(filter = {}) {
-        return AuthCompany.find(filter)
-    },
-
     deleteOneCompanyByParams(filter) {
         return AuthCompany.deleteOne(filter);
     },
@@ -38,10 +34,6 @@ module.exports = {
         return AuthUser.findOne(filter);
     },
 
-    getAllUserAuth(filter = {}) {
-        return AuthUser.find(filter)
-    },
-
     deleteOneUserByParams(filter) {
         return AuthUser.deleteOne(filter);
     },
@@ -49,4 +41,8 @@ module.exports = {
     getAllAuthUser() {
         return AuthUser.find();
     },
+
+    deleteManyByParams(filter) {
+        return AuthUser.deleteMany(filter);
+    }
 }

@@ -1,4 +1,4 @@
-const {carService, companyService} = require("../services");
+const {carService, companyService, orderCarService, tokenService} = require("../services");
 const {ApiError} = require("../errors");
 
 module.exports = {
@@ -66,6 +66,31 @@ module.exports = {
 
             const car = await carService.deleteCar(car_id);
             res.json(car);
+        } catch (e) {
+            next(e);
+        }
+    },
+
+    orderCar: async (req, res, next) => {
+        try {
+            const {_id} = req.tokenInfo.user; // objectId of tokens user
+            console.log(_id, 'token user id *********************************');
+            const {car_id} = req.params;
+            const {time_period, date} = req.body;
+            console.log(time_period, 'time periosd ********************');
+
+            const carToken = await tokenService.createCarToken({_id,  time_period});
+            console.log(carToken);
+
+            const order = await orderCarService.createCarOrder({
+                user: _id,
+                car: car_id,
+                car_token: carToken,
+                time_period,
+                date
+            });
+
+            res.json(order);
         } catch (e) {
             next(e);
         }

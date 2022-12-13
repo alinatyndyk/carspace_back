@@ -5,9 +5,9 @@ const {userValidators} = require("../validators");
 module.exports = {
     isUserPresent: (from = 'params') => async (req, res, next) => {
         try {
-            const {userId} = req[from];
+            const {user_id} = req[from];
 
-            const user = await userService.getUserById(userId);
+            const user = await userService.getUserById(user_id);
 
             if (!user) {
                 return next(new ApiError('User is not found', 400));
@@ -39,9 +39,9 @@ module.exports = {
     uniqueUserEmail: async (req, res, next) => {
         try {
             const {email} = req.body;
-            const {userId} = req.params;
+            const {user_id} = req.params;
 
-            const user = await userService.getOneByParams({email, _id: {$ne: userId}});
+            const user = await userService.getOneByParams({email, _id: {$ne: user_id}});
 
             if (user) {
                 return next(new ApiError('This email is already in use', 400));
@@ -53,4 +53,22 @@ module.exports = {
             next(e)
         }
     },
+
+
+    getUserDynamically: (from = 'body', fieldName = 'user_id', dbField = fieldName) => async (req, res, next) => {
+        try {
+            const fieldToSearch = req[from][fieldName];
+            const user = await userService.getOneByParams({[dbField]: fieldToSearch});
+
+            if (!user) {
+                return next(new ApiError('User is not found', 400));
+            }
+            req.user = user;
+
+            next();
+
+        } catch (e) {
+            next(e)
+        }
+    }
 }

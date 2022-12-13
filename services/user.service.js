@@ -18,7 +18,7 @@ module.exports = {
     },
 
     updateUser(_id, userObject) {
-        return User.findByIdAndUpdate(_id, userObject)
+        return User.findByIdAndUpdate(_id, userObject, {new: true})
     },
 
     deleteUser(_id) {

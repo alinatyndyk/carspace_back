@@ -1,7 +1,7 @@
 const {Router} = require('express');
 
 const {companyController} = require("../controllers");
-const {companyMldwr, authMldwr, commonMldwr} = require("../middlewares");
+const {companyMldwr, commonMldwr, authMldwr} = require("../middlewares");
 
 const companyRouter = Router();
 
@@ -21,7 +21,7 @@ companyRouter.post('/',
 
 companyRouter.patch('/:company_id',
     commonMldwr.validIdMldwr('company_id', 'params'),
-    // authMldwr.isAccessTokenValidCompany,
+    authMldwr.isAccessTokenValidCompany,
     companyMldwr.companyBodyValid('updateCompanyValidator'),
     companyController.updateCompany); //only a company with the same id --done
 

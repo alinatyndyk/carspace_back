@@ -3,7 +3,9 @@ const {Schema, model} = require('mongoose');
 const carSchema = new Schema({
     brand: {type: String, trim: true, required: true},
     model: {type: String, required: true},
+    // todo brand database for query params
     model_year: {type: Number, required: true},
+    status: {type: String},
     // vehicle_type: {type: String, trim: true, lowercase: true, required: true},
     // transmission: {type: String, trim: true, lowercase: true, required: true},
     // engine_capacity: {type: String, trim: true, lowercase: true, required: true},
@@ -18,7 +20,7 @@ const carSchema = new Schema({
     // additional_driver_insurance: {type: Number, required: true},
     // add_milage_charge: {type: Number, required: true},
     // min_drivers_age: {type: Number, required: true},
-    // payment_mode: {type: Array.of(String), lowercase: true, required: true},
+    // payment_mode {type: Array.of(String), lowercase: true, required: true},
     // description: {type: String, trim: true, required: true}
     company: {
         type: Schema.Types.ObjectId,

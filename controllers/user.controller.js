@@ -1,4 +1,5 @@
-const {userService} = require("../services");
+const {userService, tokenService} = require("../services");
+const {ApiError} = require("../errors");
 module.exports = {
     getAllUsers: async (req, res, next) => {
         try {
@@ -21,8 +22,10 @@ module.exports = {
 
     createUser: async (req, res, next) => {
         try {
-            const user = await userService.createUser(req.body);
-            res.json(user)
+            const hashPassword = await tokenService.hashPassword(req.body.password)
+            const createdUser = await userService.createUser({...req.body, password: hashPassword});
+
+            res.json(createdUser);
         } catch (e) {
             next(e)
         }
@@ -30,7 +33,13 @@ module.exports = {
 
     updateUser: async (req, res, next) => {
         try {
-            const {user_id} = req.params;
+            const {_id} = req.tokenInfo.user; //objectID
+            const {user_id} = req.params; //string
+
+            if (user_id !== _id.toString()) {
+                return next(new ApiError('Access token doesnt belong to the user you are trying to update'))
+            }
+
             const user = await userService.updateUser(user_id, req.body);
             res.json(user)
         } catch (e) {
@@ -41,6 +50,12 @@ module.exports = {
     deleteUser: async (req, res, next) => {
         try {
             const {user_id} = req.params;
+            const {_id} = req.tokenInfo.user;
+
+            if (user_id !== _id.toString()) {
+                return next(new ApiError('The access token doesnt belong to the user you are trying to delete', 400));
+            }
+
             const user = await userService.deleteUser(user_id);
             res.json(user)
         } catch (e) {

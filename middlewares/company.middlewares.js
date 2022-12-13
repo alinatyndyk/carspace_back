@@ -3,7 +3,7 @@ const {ApiError} = require("../errors");
 const {companyValidators} = require("../validators");
 
 module.exports = {
-    getCompanyDynamically: (from = 'body', fieldName = 'userId', dbField = fieldName) => async (req, res, next) => {
+    getCompanyDynamically: (from = 'params', fieldName = 'company_id', dbField = fieldName) => async (req, res, next) => {
         try {
             const fieldToSearch = req[from][fieldName];
             const company = await companyService.getOneByParams({[dbField]: fieldToSearch});

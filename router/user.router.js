@@ -10,7 +10,7 @@ userRouter.get('/',
     userController.getAllUsers); // only admin
 
 userRouter.get('/:user_id',
-    commonMldwr.validIdMldwr('user_Id', 'params'),
+    commonMldwr.validIdMldwr('user_id', 'params'),
     userMldwr.isUserPresent(),
     // todo admin token
     userController.getUserById); // only admin
@@ -21,17 +21,17 @@ userRouter.post('/',
     userController.createUser); // everyone
 
 userRouter.patch('/:user_id',
-    commonMldwr.validIdMldwr('user_Id', 'params'),
+    commonMldwr.validIdMldwr('user_id', 'params'),
     userMldwr.userBodyValid('updateUserValidator'),
     userMldwr.isUserPresent(),
     authMldwr.isAccessTokenValidUser,
     userMldwr.uniqueUserEmail,
-    userController.updateUser); //only with a users token
+    userController.updateUser); //only with a users token --done
 
 userRouter.delete('/:user_id',
-    commonMldwr.validIdMldwr('user_Id', 'params'),
+    commonMldwr.validIdMldwr('user_id', 'params'),
     userMldwr.isUserPresent(),
     authMldwr.isAccessTokenValidUser,
-    userController.deleteUser); //only with a users token
+    userController.deleteUser); //only with a users token --done
 
 module.exports = userRouter;

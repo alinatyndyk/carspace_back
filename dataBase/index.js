@@ -4,4 +4,6 @@ module.exports = {
     Company: require('./Company'),
     AuthCompany: require('./AuthCompany'),
     AuthUser: require('./AuthUser'),
+    ActionTokens: require('./ActionTokens'),
+    OrderCar: require('./OrderCar')
 }
