@@ -6,7 +6,7 @@ module.exports = {
     },
 
     getCarOrderByParams(filter){
-        return OrderCar.findById(filter);
+        return OrderCar.findOne(filter);
     },
 
     getCarOrders(){

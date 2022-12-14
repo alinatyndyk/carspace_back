@@ -72,7 +72,7 @@ module.exports = {
             }
 
             req.tokenInfo = tokenInfo;
-            console.log(tokenInfo.user);
+            console.log(tokenInfo.user, 'token user');
             next();
         } catch (e) {
             next(e)

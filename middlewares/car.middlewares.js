@@ -1,8 +1,7 @@
 const {carValidators} = require("../validators");
 const {ApiError} = require("../errors");
-const {carService, userService, orderCarService} = require("../services");
-const {object} = require("joi");
-const {Types} = require("mongoose");
+const {carService, orderCarService} = require("../services");
+const {logoutCompany} = require("../controllers/auth.controller");
 
 module.exports = {
     carBodyValid: (validatorType) => async (req, res, next) => {
@@ -38,20 +37,16 @@ module.exports = {
     isCarTaken: (from = 'params') => async (req, res, next) => {
         try {
             const {car_id} = req[from];
-            console.log(car_id, 'caris from params mldwr');
-
 
             const order = await orderCarService.getCarOrderByParams({car: car_id}); //todo
-            console.log(order, 'order by car id --------------------------------------------****');
 
-            if (!order) {
-                next();
+            console.log(order, 'order');
+            if (order) {
+                return next(new ApiError('The car is currently taken', 400));
             }
 
             req.order = order; //todo delete req order
-
-            next(new ApiError('The car is currently taken', 400));
-
+            next();
         } catch (e) {
             next(e)
         }

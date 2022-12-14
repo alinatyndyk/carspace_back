@@ -7,7 +7,6 @@ const carTokenSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'user'
     },
-    //date time_period
     date: {type: Date, required: true},
     time_period: {type: String, required: true},
     car: {

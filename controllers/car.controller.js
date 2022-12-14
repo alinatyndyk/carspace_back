@@ -74,13 +74,10 @@ module.exports = {
     orderCar: async (req, res, next) => {
         try {
             const {_id} = req.tokenInfo.user; // objectId of tokens user
-            console.log(_id, 'token user id *********************************');
-            const {car_id} = req.params;
+            const {car_id} = req.params; //string
             const {time_period, date} = req.body;
-            console.log(time_period, 'time periosd ********************');
 
-            const carToken = await tokenService.createCarToken({_id,  time_period});
-            console.log(carToken);
+            const carToken = await tokenService.createCarToken({_id, time_period});
 
             const order = await orderCarService.createCarOrder({
                 user: _id,
