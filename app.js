@@ -5,7 +5,8 @@ require('dotenv').config()
 const carRouter = require('./router/car.router')
 const {PORT, MONGO_URL} = require("./configs/configs");
 const {userRouter, companyRouter, authRouter} = require("./router");
-const {mainErrorHandler} = require("./errors");
+const {mainErrorHandler} = require("./errors")
+const runCronJobs = require('./cron/cron');
 
 const app = express();
 app.use(express.json());
@@ -31,5 +32,6 @@ app.listen(PORT, () => {
     console.log(`app listen ${PORT}`);
     mongoose.connect(MONGO_URL).then(() => {
         console.log(`connected to CarSpace database. Api: ${MONGO_URL}`);
+        runCronJobs();
     })
 })

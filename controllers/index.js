@@ -3,4 +3,5 @@ module.exports = {
     userController: require('./user.controller'),
     companyController: require('./company.controller'),
     authController: require('./auth.controller'),
+    orderCarController: require('./order.car.controller'),
 }

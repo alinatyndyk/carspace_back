@@ -15,6 +15,7 @@ const {
     ACCESS_COMPANY,
     REFRESH_COMPANY, ACCESS_ADMIN, REFRESH_ADMIN, FORGOT_PASSWORD, ORDER_CAR
 } = require("../constants/token.type.enum");
+const orderCarService = require("../services/order.car.service");
 
 module.exports = {
     hashPassword: (password) => bcrypt.hash(password, 10),
@@ -118,7 +119,18 @@ module.exports = {
 
             return jwt.verify(token, word);
         } catch (e) {
-            throw new ApiError('Token not valid', 400)
+            throw new ApiError(`Token not valid ${token}`, 400)
         }
-    }
+    },
+
+    verifyOrderToken: async (order) => {
+        try {
+            console.log('try -------------------------------')
+            return jwt.verify(order.car_token, ORDER_CAR_WORD);
+        } catch (e) {
+            console.log('catch ---------------------------------')
+            const deletedOrder =  await orderCarService.deleteCarOrderById(order._id);
+            return deletedOrder
+        }
+    },
 }

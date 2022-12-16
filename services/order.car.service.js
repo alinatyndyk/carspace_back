@@ -9,8 +9,16 @@ module.exports = {
         return OrderCar.findOne(filter);
     },
 
+    deleteCarOrderById(filter){
+        return OrderCar.findByIdAndDelete(filter);
+    },
+
     deleteCarOrderByParams(filter){
         return OrderCar.deleteOne(filter);
+    },
+
+    deleteCarOrders(filter = {}){
+        return OrderCar.deleteMany(filter);
     },
 
     getCarOrders(){

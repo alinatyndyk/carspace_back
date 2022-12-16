@@ -3,6 +3,7 @@ const {Router} = require('express');
 const carController = require("../controllers/car.controller");
 const {authMldwr, carMldwr, commonMldwr} = require("../middlewares");
 const {orderCarService} = require("../services");
+const {orderCarController} = require("../controllers");
 
 const carRouter = Router();
 
@@ -33,10 +34,5 @@ carRouter.post('/:car_id/order',  // only a company with a token --done
     authMldwr.isAccessTokenValidUser,
     carMldwr.isCarTaken(),
     carController.orderCar);
-
-carRouter.post('/orders',  async (req, res, next) => {
-    const orders = await orderCarService.getCarOrders();
-    res.json(orders);
-});
 
 module.exports = carRouter;

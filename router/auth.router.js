@@ -1,6 +1,6 @@
 const {Router} = require('express');
 
-const {authController} = require("../controllers");
+const {authController, orderCarController} = require("../controllers");
 const {companyMldwr, authMldwr, userMldwr} = require("../middlewares");
 const {authService} = require("../services");
 const {FORGOT_PASSWORD} = require("../constants/token.type.enum");
@@ -39,12 +39,12 @@ authRouter.post('/company/refresh',
     authController.refreshCompany
 );
 
-authRouter.post('/password/forgot',
+authRouter.post('user/password/forgot',
     userMldwr.userBodyValid('userEmailValidator'),
     userMldwr.getUserDynamically('body', 'email'),
     authController.forgotPassword);
 
-authRouter.put('/password/forgot',
+authRouter.put('user/password/reset',
     userMldwr.userBodyValid('userEmailValidator'),
     authMldwr.isActionTokenValid(FORGOT_PASSWORD),
     authMldwr.checkPreviousPassword,
@@ -63,5 +63,8 @@ authRouter.get('/user', async (req, res) => {
     const result = await authService.getAllAuthUser();
     res.json(result);
 })
+
+authRouter.get('/orders', orderCarController.getAllOrders);
+authRouter.delete('/orders', orderCarController.deleteAllOrders);
 
 module.exports = authRouter;
