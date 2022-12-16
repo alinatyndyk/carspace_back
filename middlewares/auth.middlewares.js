@@ -1,12 +1,12 @@
 const {ApiError} = require("../errors");
-const {tokenService, authService, actionTokenService} = require("../services");
+const {tokenService, authService, actionTokenService, previousPasswordService} = require("../services");
 const {ACCESS_TOKEN, REFRESH_TOKEN, AUTHORIZATION} = require("../constants/constants");
 const {
     ACCESS_COMPANY,
     REFRESH_COMPANY,
     ACCESS_USER,
     REFRESH_USER,
-    ACCESS_ADMIN
+    ACCESS_ADMIN, REFRESH_ADMIN
 } = require("../constants/token.type.enum");
 
 module.exports = {
@@ -179,7 +179,7 @@ module.exports = {
                 return next(new ApiError('You are unauthorized. No refresh token for user', 401))
             }
 
-            tokenService.checkToken(refresh_token, REFRESH_USER);
+            tokenService.checkToken(refresh_token, REFRESH_ADMIN);
 
             const tokenInfo = await authService.getOneWithUser({refresh_token});
 

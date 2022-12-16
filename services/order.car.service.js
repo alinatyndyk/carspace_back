@@ -9,6 +9,10 @@ module.exports = {
         return OrderCar.findOne(filter);
     },
 
+    deleteCarOrderByParams(filter){
+        return OrderCar.deleteOne(filter);
+    },
+
     getCarOrders(){
         return OrderCar.find();
     }

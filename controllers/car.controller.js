@@ -76,8 +76,9 @@ module.exports = {
             const {_id} = req.tokenInfo.user; // objectId of tokens user
             const {car_id} = req.params; //string
             const {time_period, date} = req.body;
+            console.log(time_period, 'time period-----------------------1st');
 
-            const carToken = await tokenService.createCarToken({_id, time_period});
+            const carToken = await tokenService.createCarToken(time_period, {_id});
 
             const order = await orderCarService.createCarOrder({
                 user: _id,

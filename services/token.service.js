@@ -13,7 +13,7 @@ const {
     ACCESS_USER,
     REFRESH_USER,
     ACCESS_COMPANY,
-    REFRESH_COMPANY, ACCESS_ADMIN, REFRESH_ADMIN, FORGOT_PASSWORD
+    REFRESH_COMPANY, ACCESS_ADMIN, REFRESH_ADMIN, FORGOT_PASSWORD, ORDER_CAR
 } = require("../constants/token.type.enum");
 
 module.exports = {
@@ -37,7 +37,7 @@ module.exports = {
     // },
 
     createAuthTokensUser: (payload = {}) => {
-        const access_token = jwt.sign(payload, ACCESS_SECRET_WORD_USER, {expiresIn: '10m'})
+        const access_token = jwt.sign(payload, ACCESS_SECRET_WORD_USER, {expiresIn: '30m'})
         const refresh_token = jwt.sign(payload, REFRESH_SECRET_WORD_USER, {expiresIn: '30d'})
 
         return {
@@ -74,8 +74,10 @@ module.exports = {
         return jwt.sign(payload, ACTION_TOKEN_SECRET, {expiresIn})
     },
 
-    createCarToken: (payload = {}, time_period) => {
-        return jwt.sign(payload, ORDER_CAR_WORD, time_period)
+    createCarToken: (time_period, payload = {}) => {
+        let expiresIn = time_period;
+        console.log(expiresIn, 'time period ---------------------------------');
+        return jwt.sign(payload, ORDER_CAR_WORD, {expiresIn})
     },
 
     checkToken: (token, tokenType = ACCESS) => {
@@ -109,6 +111,9 @@ module.exports = {
                     break;
                 case FORGOT_PASSWORD:
                     word = ACTION_TOKEN_SECRET;
+                    break;
+                case ORDER_CAR:
+                    word = ORDER_CAR_WORD
             }
 
             return jwt.verify(token, word);
