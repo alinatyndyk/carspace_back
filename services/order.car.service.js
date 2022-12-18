@@ -5,8 +5,8 @@ module.exports = {
         return OrderCar.create(orderInfo);
     },
 
-    getCarOrderByParams(filter){
-        return OrderCar.findOne(filter);
+    getCarOrdersByParams(filter){
+        return OrderCar.find(filter);
     },
 
     deleteCarOrderById(filter){

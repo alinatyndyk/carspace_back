@@ -75,10 +75,8 @@ module.exports = {
         return jwt.sign(payload, ACTION_TOKEN_SECRET, {expiresIn})
     },
 
-    createCarToken: (time_period, payload = {}) => {
-        let expiresIn = time_period;
-        console.log(expiresIn, 'time period ---------------------------------');
-        return jwt.sign(payload, ORDER_CAR_WORD, {expiresIn})
+    createCarToken: (payload = {}) => {
+        return jwt.sign(payload, ORDER_CAR_WORD);
     },
 
     checkToken: (token, tokenType = ACCESS) => {
@@ -116,7 +114,6 @@ module.exports = {
                 case ORDER_CAR:
                     word = ORDER_CAR_WORD
             }
-
             return jwt.verify(token, word);
         } catch (e) {
             throw new ApiError(`Token not valid ${token}`, 400)
@@ -128,9 +125,12 @@ module.exports = {
             console.log('try -------------------------------')
             return jwt.verify(order.car_token, ORDER_CAR_WORD);
         } catch (e) {
-            console.log('catch ---------------------------------')
-            const deletedOrder =  await orderCarService.deleteCarOrderById(order._id);
+            console.log(e.message);
+            if(e.message === 'jwt expired'){
+            console.log('catch if jwt expired ---------------------------------')
+            const deletedOrder = await orderCarService.deleteCarOrderById(order._id);
             return deletedOrder
+            }
         }
     },
 }

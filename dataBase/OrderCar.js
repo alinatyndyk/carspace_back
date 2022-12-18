@@ -2,13 +2,13 @@ const {Schema, model} = require('mongoose');
 
 const carTokenSchema = new Schema({
     car_token: {type: String, trim: true, required: true},
-    // refresh_token: {type: String, trim: true, required: true},
     user: {
         type: Schema.Types.ObjectId,
         ref: 'user'
     },
-    date: {type: Date, required: true},
-    time_period: {type: String, required: true},
+    from_date: {type: Date, required: true},
+    to_date: {type: Date, required: true},
+    Difference_In_Days: {type: String},
     car: {
         type: Schema.Types.ObjectId,
         ref: 'car'

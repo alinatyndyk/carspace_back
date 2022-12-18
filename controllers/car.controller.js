@@ -75,17 +75,25 @@ module.exports = {
         try {
             const {_id} = req.tokenInfo.user; // objectId of tokens user
             const {car_id} = req.params; //string
-            const {time_period, date} = req.body;
-            console.log(time_period, 'time period-----------------------1st');
+            const {from_date, to_date} = req.body;
+            console.log(from_date, to_date, 'time period-----------------------1st');
 
-            const carToken = await tokenService.createCarToken(time_period, {_id});
+            // const fromDate = new Date(from_date).setHours(8);
+            const fromDate = new Date(from_date).getTime();
+            const toDate = new Date(to_date).getTime();
+            const Difference_In_Time = toDate - fromDate;
+            const Difference_In_Days = Difference_In_Time / (1000 * 3600 * 24);
+            console.log(fromDate, toDate, Difference_In_Days);
+
+            const carToken = await tokenService.createCarToken({nbf: fromDate, exports: toDate}); //nbf exp
 
             const order = await orderCarService.createCarOrder({
                 user: _id,
                 car: car_id,
                 car_token: carToken,
-                time_period,
-                date
+                from_date,
+                to_date,
+                Difference_In_Days
             });
 
             res.json(order);
