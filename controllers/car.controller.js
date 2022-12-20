@@ -24,7 +24,9 @@ module.exports = {
     createCar: async (req, res, next) => {
         try {
             const {_id} = req.tokenInfo.company;
-            const car = await carService.createCar({...req.body, company: _id});
+            const {brand} = req.body;
+            const brand_db = brand.replace(/\s/g, '_');
+            const car = await carService.createCar({...req.body, company: _id, brand_db});
             const companyCars = await carService.getCarsByParams({company: _id});
             await companyService.updateCompany(_id, {cars: [...companyCars]})
             res.json(car);

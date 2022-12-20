@@ -2,6 +2,7 @@ const {Schema, model} = require('mongoose');
 
 const carSchema = new Schema({
     brand: {type: String, trim: true, required: true},
+    brand_db:{type: String, trim: true, lowercase: true},
     model: {type: String, required: true},
     // todo brand database for query params
     model_year: {type: Number, required: true},

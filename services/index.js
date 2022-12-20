@@ -7,4 +7,5 @@ module.exports = {
     actionTokenService: require('./action.token.service'),
     previousPasswordService: require('./previous.password.service'),
     orderCarService: require('./order.car.service'),
+    emailService: require('./email.service'),
 }

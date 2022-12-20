@@ -20,14 +20,15 @@ module.exports = {
 
     searchCarsWithQuery: async (req, res, next) => {
         try {
+            // const {brand: brand_db} = req.query;
             const cars = await carService.getCarsByParams(req.query);
 
             if (!cars) {
                 return next(new ApiError('Cars were not found. Try later', 404));
             }
 
-            res.json(cars);
             next();
+            res.json(cars);
         } catch (e) {
             next(e)
         }
@@ -69,16 +70,6 @@ module.exports = {
                 }
 
             })
-
-            // const getDaysArray = function(s,e) {for( a=[],d=new Date(s);d<=new Date(e);d.setDate(d.getDate()+1)){ a.push(new Date(d));}return a;};
-            //
-            // const daylist = getDaysArray(new Date(order.from_date).setHours(0),new Date(order.to_date).setHours(0));
-            // daylist.map((v)=>v.toISOString().slice(0,10)).join(""); console.log(daylist, 'daylist');
-            // const daylistBook = getDaysArray(new Date(from_date).setHours(0),new Date(to_date).setHours(0));
-            // daylistBook.map((v)=>v.toISOString().slice(0,10)).join(""); console.log(daylistBook, 'daylistBook');
-            // x = daylist.map(day => day.getTime()); y = daylistBook.map(day => day.getTime()); console.log(x, y)
-            // const output = y.filter(function (obj) {return x.indexOf(obj) !== -1;});console.log(output, 'output *********');
-
 
             next();
         } catch (e) {

@@ -1,5 +1,8 @@
 const {userService, tokenService} = require("../services");
 const {ApiError} = require("../errors");
+const {WELCOME} = require("../constants/email.action.enum");
+const {sendEmail} = require("../services/email.service");
+
 module.exports = {
     getAllUsers: async (req, res, next) => {
         try {
@@ -22,8 +25,11 @@ module.exports = {
 
     createUser: async (req, res, next) => {
         try {
+            const {email, name} = req.body;
             const hashPassword = await tokenService.hashPassword(req.body.password)
             const createdUser = await userService.createUser({...req.body, password: hashPassword});
+
+            await sendEmail(email, WELCOME, {userName: name});
 
             res.json(createdUser);
         } catch (e) {
