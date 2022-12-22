@@ -1,4 +1,11 @@
-const {tokenService, authService, actionTokenService, previousPasswordService, userService} = require("../services");
+const {
+    tokenService,
+    authService,
+    actionTokenService,
+    previousPasswordService,
+    userService,
+    emailService
+} = require("../services");
 const {FORGOT_PASSWORD} = require("../constants/token.type.enum");
 const {FRONTEND_URL} = require("../configs/configs");
 const {AUTHORIZATION} = require("../constants/constants");
@@ -102,15 +109,15 @@ module.exports = {
 
             const url = `${FRONTEND_URL}/password/forgot-pass-page?tokenAction=${actionToken}`
             console.log(url, '****************************************************');
-            // await emailService.sendEmail(email, FORGOT_PASSWORD, {url}); todo
-            await actionTokenService.createActionToken({
+            await emailService.sendEmail(email, FORGOT_PASSWORD, {url});
+            const actionTokenSchema = await actionTokenService.createActionToken({
                 tokenType: FORGOT_PASSWORD,
                 user: _id,
                 token: actionToken
             })
 
 
-            res.json('OK')
+            res.json(actionTokenSchema);
         } catch (e) {
             next(e);
         }
@@ -118,19 +125,19 @@ module.exports = {
 
     setNewPasswordForgot: async (req, res, next) => {
         try {
+            const token = req.get(AUTHORIZATION);
             const {user} = req.tokenInfo;
             const {password} = req.body;
-            const token = req.get(AUTHORIZATION);
 
-            await previousPasswordService.savePasswordInfo({password: user.password, user: user._id})
+            const previousPassword = await previousPasswordService.savePasswordInfoUser({password: user.password, user});
 
             await authService.deleteManyByParams({user: user._id});
             await actionTokenService.deleteActionToken({token});
 
             const hashPassword = await tokenService.hashPassword(password);
-            await userService.updateUser(user._id, {password: hashPassword});
+            const updatedUser = await userService.updateUser(user._id, {password: hashPassword});
 
-            res.json('OK');
+            res.json({previousPassword, updatedUser});
         } catch (e) {
             next(e);
         }

@@ -43,13 +43,13 @@ authRouter.post('/company/refresh',
 
 //______________________________________________________________
 
-authRouter.post('user/password/forgot',
+authRouter.post('/user/password/forgot',
     userMldwr.userBodyValid('userEmailValidator'),
     userMldwr.getUserDynamically('body', 'email'),
     authController.forgotPassword);
 
-authRouter.put('user/password/reset',
-    userMldwr.userBodyValid('userEmailValidator'),
+authRouter.put('/user/password/reset',
+    userMldwr.userBodyValid('userPasswordValidator'),
     authMldwr.isActionTokenValid(FORGOT_PASSWORD),
     authMldwr.checkPreviousPassword,
     authController.setNewPasswordForgot);

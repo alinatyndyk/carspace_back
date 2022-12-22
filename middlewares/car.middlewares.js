@@ -20,7 +20,6 @@ module.exports = {
 
     searchCarsWithQuery: async (req, res, next) => {
         try {
-            // const {brand: brand_db} = req.query;
             const cars = await carService.getCarsByParams(req.query);
 
             if (!cars) {
@@ -28,9 +27,8 @@ module.exports = {
             }
 
             next();
-            res.json(cars);
         } catch (e) {
-            next(e)
+            next(e) //todo if works
         }
     },
 
@@ -40,7 +38,7 @@ module.exports = {
             const orders = await orderCarService.getCarOrdersByParams({car: car_id});
             // console.log(order, 'order');
             // console.log(order.from_date, order.to_date, 'dates booked --------------------------');
-            const {from_date, to_date} = req.body; // we try to book
+            const {from_date, to_date} = req.body;
             console.log(from_date, to_date, 'dates from req body --------------------------');
 
             const getDaysArray = function (s, e) {
@@ -66,7 +64,7 @@ module.exports = {
                 });
                 console.log(output, 'output *********');
                 if (output.length !== 0) {
-                    next(new ApiError(`The car is taken from ${order.from_date} - ${order.to_date}`));
+                    next(new ApiError(`The car is taken from ${order.from_date} - ${order.to_date}`)); //todo no console
                 }
 
             })

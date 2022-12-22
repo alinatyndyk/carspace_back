@@ -27,6 +27,14 @@ module.exports = {
         }
     },
 
+    comparePass: async (password, hashPassword) => {
+        const isPasswordsSame = await bcrypt.compare(password, hashPassword);
+
+        if (!isPasswordsSame) {
+            console.log('not same pass');
+        }
+    },
+
     // createAuthTokens: (payload = {}) => {
     //     const access_token = jwt.sign(payload, ACCESS_SECRET_WORD, {expiresIn: '10m'})
     //     const refresh_token = jwt.sign(payload, REFRESH_SECRET_WORD, {expiresIn: '30d'})

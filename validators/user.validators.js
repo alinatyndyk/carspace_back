@@ -15,7 +15,6 @@ const newUserValidator = Joi.object({
     last_name: lastnameValidator.required(),
     age: ageValidator,
     email: emailValidator.required(),
-    driving_license_country: licenseValidator.required(),
     password: passValidator.required(),
 
 })
@@ -24,7 +23,6 @@ const updateUserValidator = Joi.object({
     name: nameValidator,
     age: ageValidator,
     email: emailValidator,
-    driving_license_country: licenseValidator,
     password: passValidator,
 
 })
@@ -36,12 +34,12 @@ const loginUserValidator = Joi.object({
 });
 
 const userPasswordValidator = Joi.object({
-    password: passValidator.required().error(new ApiError('Wrong pass', 400)),
+    password: passValidator.required().error(new ApiError('Wrong pass validation', 400)),
 
 });
 
 const userEmailValidator = Joi.object({
-    email: emailValidator.required().error(new ApiError('Wrong email', 400)),
+    email: emailValidator.required().error(new ApiError('Wrong email validation', 400)),
 });
 
 module.exports = {

@@ -6,5 +6,6 @@ module.exports = {
     AuthUser: require('./AuthUser'),
     ActionTokens: require('./ActionTokens'),
     OrderCar: require('./OrderCar'),
-    PreviousPasswordUser: require('./PreviousPaswordUser')
+    PreviousPasswordUser: require('./PreviousPaswordUser'),
+    PreviousPasswordCompany: require('./PreviousPaswordCompany'),
 }

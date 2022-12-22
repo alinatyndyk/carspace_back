@@ -2,7 +2,7 @@ const {ActionTokens} = require('../dataBase')
 
 module.exports = {
     createActionToken(dataToInsert) {
-        return ActionTokens.find(dataToInsert);
+        return ActionTokens.create(dataToInsert);
     },
 
     getOneBySearchParamsWithUser: (searchParams) => {
