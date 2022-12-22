@@ -9,8 +9,8 @@ module.exports = {
         return OrderCar.find(filter);
     },
 
-    deleteCarOrderById(filter){
-        return OrderCar.findByIdAndDelete(filter);
+    deleteCarOrderById(_id){
+        return OrderCar.findByIdAndDelete(_id);
     },
 
     deleteCarOrderByParams(filter){
@@ -23,5 +23,9 @@ module.exports = {
 
     getCarOrders(){
         return OrderCar.find();
+    },
+
+    getCarOrderById(_id){
+        return OrderCar.findById(_id);
     }
 }

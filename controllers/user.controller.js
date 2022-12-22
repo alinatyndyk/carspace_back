@@ -1,6 +1,6 @@
 const {userService, tokenService} = require("../services");
 const {ApiError} = require("../errors");
-const {WELCOME} = require("../constants/email.action.enum");
+const {WELCOME, DELETE_USER, CREATE_USER} = require("../constants/email.action.enum");
 const {sendEmail} = require("../services/email.service");
 
 module.exports = {
@@ -27,13 +27,12 @@ module.exports = {
         try {
             const {email, name} = req.body;
             const hashPassword = await tokenService.hashPassword(req.body.password)
+            await sendEmail(email, CREATE_USER, {userName: name});
             const createdUser = await userService.createUser({...req.body, password: hashPassword});
-
-            await sendEmail(email, WELCOME, {userName: name});
 
             res.json(createdUser);
         } catch (e) {
-            next(e)
+            next(e);
         }
     },
 
@@ -56,11 +55,13 @@ module.exports = {
     deleteUser: async (req, res, next) => {
         try {
             const {user_id} = req.params;
-            const {_id} = req.tokenInfo.user;
+            const {_id, email, name} = req.tokenInfo.user;
 
             if (user_id !== _id.toString()) {
                 return next(new ApiError('The access token doesnt belong to the user you are trying to delete', 400));
             }
+
+            await sendEmail(email, DELETE_USER, {userName: name});
 
             const user = await userService.deleteUser(user_id);
             res.json(user)

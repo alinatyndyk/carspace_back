@@ -1,5 +1,7 @@
 const {companyService, tokenService} = require("../services");
 const {ApiError} = require("../errors");
+const {sendEmail} = require("../services/email.service");
+const {COMPANY_CREATE} = require("../constants/email.action.enum");
 module.exports = {
     getAllCompanies: async (req, res, next) => {
         try {
@@ -22,7 +24,9 @@ module.exports = {
 
     createCompany: async (req, res, next) => {
         try {
-            const hashPassword = await tokenService.hashPassword(req.body.password)
+            const {email, name} = req.body;
+            const hashPassword = await tokenService.hashPassword(req.body.password);
+            await sendEmail(email, COMPANY_CREATE, {companyName: name});
             const company = await companyService.createCompany({...req.body, password: hashPassword});
             res.json(company);
         } catch (e) {

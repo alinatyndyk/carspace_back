@@ -2,7 +2,7 @@ const nodeMailer = require('nodemailer');
 const path = require('path');
 
 const {NO_REPLY_EMAIL, NO_REPLY_PASSWORD, FRONTEND_URL} = require("../configs/configs");
-const emailTemplatesObj = require('../email-templates')
+const emailTemplatesObj = require('../email-templates');
 const EmailTemplates = require('email-templates');
 const {ApiError} = require("../errors");
 

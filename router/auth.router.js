@@ -23,6 +23,8 @@ authRouter.post('/user/refresh',
     authController.refreshUser
 );
 
+//_______________________________________________________________
+
 authRouter.post('/company/login',
     companyMldwr.companyBodyValid('loginCompanyValidator'),
     companyMldwr.getCompanyDynamically('body', 'contact_number'),
@@ -39,6 +41,8 @@ authRouter.post('/company/refresh',
     authController.refreshCompany
 );
 
+//______________________________________________________________
+
 authRouter.post('user/password/forgot',
     userMldwr.userBodyValid('userEmailValidator'),
     userMldwr.getUserDynamically('body', 'email'),
@@ -53,18 +57,46 @@ authRouter.put('user/password/reset',
 //password forgot
 //password/reset
 
+//________________________________________________________________
 
 authRouter.get('/company', async (req, res) => {
-    const result = await authService.getAllAuthCompany();
+    const result = await authService.getAllAuthCompany(); // for admin
     res.json(result);
 });
 
 authRouter.get('/user', async (req, res) => {
-    const result = await authService.getAllAuthUser();
+    const result = await authService.getAllAuthUser(); // for admin
     res.json(result);
-})
+});
 
-authRouter.get('/orders', orderCarController.getAllOrders);
-authRouter.delete('/orders', orderCarController.deleteAllOrders);
+//_______________________________________________________________
+
+authRouter.get('/orders/all', //for admin
+    orderCarController.getAllOrders
+);
+
+authRouter.delete('/orders',
+    orderCarController.deleteAllOrders
+); // for admin
+
+authRouter.get('/orders/today', // only for user --done
+    // authMldwr.isAccessTokenValidUser, // token company
+    orderCarController.getAllOrdersToday
+);
+
+authRouter.get('/orders', // only for user --done
+    authMldwr.isAccessTokenValidUser,
+    orderCarController.getAllUserOrders
+);
+
+authRouter.get('/orders/:order_id', // only for user --done
+    authMldwr.isAccessTokenValidUser,
+    orderCarController.getUserOrderById
+);
+
+authRouter.delete('/orders/:order_id', // only for user --done
+    authMldwr.isAccessTokenValidUser,
+    orderCarController.deleteUserOrderById
+);
 
 module.exports = authRouter;

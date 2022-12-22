@@ -1,5 +1,7 @@
 const {carService, companyService, orderCarService, tokenService} = require("../services");
 const {ApiError} = require("../errors");
+const {sendEmail} = require("../services/email.service");
+const {COMPANY_CREATE, ORDER_CREATION} = require("../constants/email.action.enum");
 
 module.exports = {
     getAllCars: async (req, res, next) => {
@@ -47,7 +49,7 @@ module.exports = {
                 return next(new ApiError('Access token doesnt belong to the car you are trying to update'))
             }
 
-            const car = await carService.updateCar(car_id, req.body);
+            const car = await carService.updateCar(car_id, req.body,);
             res.json(car);
         } catch (e) {
             next(e);
@@ -75,7 +77,7 @@ module.exports = {
 
     orderCar: async (req, res, next) => {
         try {
-            const {_id} = req.tokenInfo.user; // objectId of tokens user
+            const {_id, email} = req.tokenInfo.user; // objectId of tokens user
             const {car_id} = req.params; //string
             const {from_date, to_date} = req.body;
             console.log(from_date, to_date, 'time period-----------------------1st');
@@ -88,6 +90,8 @@ module.exports = {
             console.log(fromDate, toDate, Difference_In_Days);
 
             const carToken = await tokenService.createCarToken({nbf: fromDate, exports: toDate}); //nbf exp
+
+            await sendEmail(email, ORDER_CREATION, {user_id: _id, order_id: 'id xxx', car_id});
 
             const order = await orderCarService.createCarOrder({
                 user: _id,

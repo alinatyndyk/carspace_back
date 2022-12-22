@@ -72,6 +72,7 @@ module.exports = {
         if (tokenType === FORGOT_PASSWORD) {
             expiresIn = '1d';
         }
+
         return jwt.sign(payload, ACTION_TOKEN_SECRET, {expiresIn})
     },
 
