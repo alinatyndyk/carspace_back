@@ -1,13 +1,13 @@
 const {Schema, model} = require('mongoose');
 
-const previousPasswordUserSchema = new Schema({
+const previousPasswordCompanySchema = new Schema({
     password: {type: String, required: true},
-    user: {
+    company: {
         type: Schema.Types.ObjectId,
-        ref: 'user'
+        ref: 'company'
     }
 }, {
     timestamps: true
 })
 
-module.exports = model('previous_password_user', previousPasswordUserSchema);
+module.exports = model('previous_password_company', previousPasswordCompanySchema);
