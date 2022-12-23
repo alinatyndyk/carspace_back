@@ -6,6 +6,10 @@ const actionTokensSchema = new Schema({
     user: {
         type: Schema.Types.ObjectId,
         ref: 'user'
+    },
+    company: {
+        type: Schema.Types.ObjectId,
+        ref: 'company'
     }
 }, {
     timestamps: true

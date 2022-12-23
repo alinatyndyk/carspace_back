@@ -5,7 +5,7 @@ const {ApiError} = require("../errors");
 const {
     ACCESS_SECRET_WORD, REFRESH_SECRET_WORD, ACCESS_SECRET_WORD_USER, REFRESH_SECRET_WORD_USER,
     ACCESS_SECRET_WORD_COMPANY, REFRESH_SECRET_WORD_COMPANY, ACCESS_SECRET_WORD_ADMIN, REFRESH_SECRET_WORD_ADMIN,
-    ACTION_TOKEN_SECRET, ORDER_CAR_WORD
+    ACTION_TOKEN_SECRET, ORDER_CAR_WORD, FORGOT_PASSWORD_USER_WORD, FORGOT_PASSWORD_COMPANY_WORD
 } = require("../configs/configs");
 const {
     ACCESS,
@@ -13,7 +13,8 @@ const {
     ACCESS_USER,
     REFRESH_USER,
     ACCESS_COMPANY,
-    REFRESH_COMPANY, ACCESS_ADMIN, REFRESH_ADMIN, FORGOT_PASSWORD, ORDER_CAR
+    REFRESH_COMPANY, ACCESS_ADMIN, REFRESH_ADMIN, FORGOT_PASSWORD, ORDER_CAR, FORGOT_PASSWORD_USER,
+    FORGOT_PASSWORD_COMPANY
 } = require("../constants/token.type.enum");
 const orderCarService = require("../services/order.car.service");
 
@@ -77,11 +78,20 @@ module.exports = {
 
     createActionToken: (tokenType, payload = {}) => {
         let expiresIn = '7d';
-        if (tokenType === FORGOT_PASSWORD) {
-            expiresIn = '1d';
+        let word;
+        switch (tokenType) {
+            case FORGOT_PASSWORD_USER:
+                word = FORGOT_PASSWORD_USER_WORD
+                expiresIn = '1d';
+                break;
+            case FORGOT_PASSWORD_COMPANY:
+                word = FORGOT_PASSWORD_COMPANY_WORD
+                expiresIn = '1d';
+                break;
         }
+        console.log(word);
 
-        return jwt.sign(payload, ACTION_TOKEN_SECRET, {expiresIn})
+        return jwt.sign(payload, word, {expiresIn})
     },
 
     createCarToken: (payload = {}) => {
@@ -122,6 +132,13 @@ module.exports = {
                     break;
                 case ORDER_CAR:
                     word = ORDER_CAR_WORD
+                    break;
+                case FORGOT_PASSWORD_USER:
+                    word = FORGOT_PASSWORD_USER_WORD
+                    break;
+                case FORGOT_PASSWORD_COMPANY:
+                    word = FORGOT_PASSWORD_COMPANY_WORD
+                    break;
             }
             return jwt.verify(token, word);
         } catch (e) {
@@ -135,10 +152,10 @@ module.exports = {
             return jwt.verify(order.car_token, ORDER_CAR_WORD);
         } catch (e) {
             console.log(e.message);
-            if(e.message === 'jwt expired'){
-            console.log('catch if jwt expired ---------------------------------')
-            const deletedOrder = await orderCarService.deleteCarOrderById(order._id);
-            return deletedOrder
+            if (e.message === 'jwt expired') {
+                console.log('catch if jwt expired ---------------------------------')
+                const deletedOrder = await orderCarService.deleteCarOrderById(order._id);
+                return deletedOrder
             }
         }
     },

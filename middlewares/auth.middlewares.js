@@ -6,7 +6,7 @@ const {
     REFRESH_COMPANY,
     ACCESS_USER,
     REFRESH_USER,
-    ACCESS_ADMIN, REFRESH_ADMIN
+    ACCESS_ADMIN, REFRESH_ADMIN, FORGOT_PASSWORD_COMPANY, FORGOT_PASSWORD_USER
 } = require("../constants/token.type.enum");
 
 module.exports = {
@@ -106,16 +106,22 @@ module.exports = {
     isActionTokenValid: (tokenType) => async (req, res, next) => {
         try {
             const token = req.get(AUTHORIZATION);
+            console.log(tokenType);
             tokenService.checkToken(token, tokenType);
 
             if (!token) {
-                return next(new ApiError('No action token', 401));
+                return next(new ApiError('No action token', 401))
+            }
+            let tokenInfo;
+            if (tokenType === FORGOT_PASSWORD_COMPANY) {
+                tokenInfo = await actionTokenService.getOneBySearchParamsWithCompany({tokenType, token})
+            } else if (tokenType === FORGOT_PASSWORD_USER) {
+                tokenInfo = await actionTokenService.getOneBySearchParamsWithUser({tokenType, token});
             }
 
-            const tokenInfo = await actionTokenService.getOneBySearchParamsWithUser({tokenType, token});
 
             if (!tokenInfo) {
-                return next(new ApiError('No valid action token', 401));
+                return next(new ApiError('no valid token', 401))
             }
 
             req.tokenInfo = tokenInfo;
@@ -126,51 +132,39 @@ module.exports = {
         }
     },
 
-    // checkPreviousPassword: async (req, res, next) => {
-    //     try {
-    //         const {user} = req.tokenInfo;
-    //         const {password} = req.body;
-    //         const oldPasswords = await previousPasswordService.getByUserId(user._id);
-    //         console.log(oldPasswords);
-    //
-    //         const promises = await Promise.allSettled([oldPasswords.map(old => tokenService.comparePasswords(password, old.password)),
-    //                 tokenService.comparePasswords(password, user.password)]);
-    //
-    //             for (const {status} of promises) {
-    //                 if (status === 'fulfilled') {
-    //                     return next(new ApiError('Choose a new password', 400));
-    //                 }
-    //             }
-    //
-    //         next();
-    //     } catch (e) {
-    //         next(e)
-    //     }
-    // },
-
-    checkPreviousPassword: async (req, res, next) => {
+    checkPreviousPasswordUser: async (req, res, next) => {
         try {
             const {user} = req.tokenInfo;
-            console.log(user, 'token info user');
             const {password} = req.body;
             const oldPasswords = await previousPasswordService.getByUserId(user._id);
-            console.log(oldPasswords, 'old passwords');
-
-
-            // const promises = await Promise.allSettled(oldPasswords.map(old => tokenService.comparePasswords(password, old.password)));
-            // console.log(promises, 'promises');
-
-
-            // const promise = await Promise.allSettled(await tokenService.comparePasswords(password, user.password));
-            // console.log(promises, 'promises');
 
             const promises = await Promise.allSettled([...oldPasswords.map(old => tokenService.comparePasswords(password, old.password)),
                 tokenService.comparePasswords(password, user.password)]);
 
             for (const {status} of promises) {
-                console.log(status);
                 if (status === 'fulfilled') {
-                    return next(new ApiError('choose a password you have not used before', 400))
+                    return next(new ApiError('Choose a new password', 400))
+                }
+            }
+
+            next();
+        } catch (e) {
+            next(e)
+        }
+    },
+
+    checkPreviousPasswordCompany: async (req, res, next) => {
+        try {
+            const {company} = req.tokenInfo;
+            const {password} = req.body;
+            const oldPasswords = await previousPasswordService.getByCompanyId(company._id);
+
+            const promises = await Promise.allSettled([...oldPasswords.map(old => tokenService.comparePasswords(password, old.password)),
+                tokenService.comparePasswords(password, company.password)]);
+
+            for (const {status} of promises) {
+                if (status === 'fulfilled') {
+                    return next(new ApiError('Choose a new password', 400))
                 }
             }
 

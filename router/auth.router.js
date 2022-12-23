@@ -1,9 +1,9 @@
 const {Router} = require('express');
 
 const {authController, orderCarController} = require("../controllers");
-const {companyMldwr, authMldwr, userMldwr} = require("../middlewares");
+const {companyMldwr, authMldwr, userMldwr, commonMldwr} = require("../middlewares");
 const {authService} = require("../services");
-const {FORGOT_PASSWORD} = require("../constants/token.type.enum");
+const {FORGOT_PASSWORD, FORGOT_PASSWORD_USER, FORGOT_PASSWORD_COMPANY} = require("../constants/token.type.enum");
 
 const authRouter = Router();
 
@@ -43,19 +43,27 @@ authRouter.post('/company/refresh',
 
 //______________________________________________________________
 
-authRouter.post('/user/password/forgot',
-    userMldwr.userBodyValid('userEmailValidator'),
+authRouter.post('/password_forgot/user',
+    commonMldwr.isBodyValid('EmailValidator'),
     userMldwr.getUserDynamically('body', 'email'),
-    authController.forgotPassword);
+    authController.forgotPasswordUser);
 
-authRouter.put('/user/password/reset',
-    userMldwr.userBodyValid('userPasswordValidator'),
-    authMldwr.isActionTokenValid(FORGOT_PASSWORD),
-    authMldwr.checkPreviousPassword,
-    authController.setNewPasswordForgot);
+authRouter.put('/password_reset/user',
+    commonMldwr.isBodyValid('PasswordValidator'),
+    authMldwr.isActionTokenValid(FORGOT_PASSWORD_USER),
+    authMldwr.checkPreviousPasswordUser,
+    authController.setNewPasswordForgotUser);
 
-//password forgot
-//password/reset
+authRouter.post('/password_forgot/company',
+    commonMldwr.isBodyValid('NumberValidator'),
+    companyMldwr.getCompanyDynamically('body', 'contact_number'),
+    authController.forgotPasswordCompany);
+
+authRouter.put('/password_reset/company',
+    commonMldwr.isBodyValid('PasswordValidator'),
+    authMldwr.isActionTokenValid(FORGOT_PASSWORD_COMPANY),
+    authMldwr.checkPreviousPasswordCompany,
+    authController.setNewPasswordForgotCompany);
 
 //________________________________________________________________
 

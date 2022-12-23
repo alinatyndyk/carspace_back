@@ -17,6 +17,10 @@ module.exports = {
         return AuthCompany.deleteOne(filter);
     },
 
+    deleteManyByParamsCompany(filter) {
+        return AuthCompany.deleteMany(filter);
+    },
+
     getAllAuthCompany() {
         return AuthCompany.find();
     },

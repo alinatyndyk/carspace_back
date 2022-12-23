@@ -18,7 +18,7 @@ const newCompanyValidator = Joi.object({
 const updateCompanyValidator = Joi.object({
     name: nameValidator,
     contact_number: numberValidator,
-    password: passValidator
+    email: emailValidator
 });
 
 const loginCompanyValidator = Joi.object({
@@ -29,5 +29,6 @@ const loginCompanyValidator = Joi.object({
 module.exports = {
     newCompanyValidator,
     updateCompanyValidator,
-    loginCompanyValidator
+    loginCompanyValidator,
+    numberValidator
 }

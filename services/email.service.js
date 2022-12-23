@@ -10,7 +10,7 @@ const sendEmail = async (userMail, emailAction, locals = {}) => {
     const transporter = nodeMailer.createTransport({
         service: 'gmail',
         auth: {
-            user: NO_REPLY_EMAIL, //todo add email
+            user: NO_REPLY_EMAIL,
             pass: NO_REPLY_PASSWORD
         }
     })

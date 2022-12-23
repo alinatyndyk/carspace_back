@@ -4,11 +4,13 @@ const {
     actionTokenService,
     previousPasswordService,
     userService,
-    emailService
+    emailService, companyService
 } = require("../services");
-const {FORGOT_PASSWORD} = require("../constants/token.type.enum");
+const {FORGOT_PASSWORD, FORGOT_PASSWORD_USER, FORGOT_PASSWORD_COMPANY} = require("../constants/token.type.enum");
 const {FRONTEND_URL} = require("../configs/configs");
 const {AUTHORIZATION} = require("../constants/constants");
+const {sendEmail} = require("../services/email.service");
+const {RESET_PASSWORD} = require("../constants/email.action.enum");
 
 module.exports = {
     loginCompany: async (req, res, next) => {
@@ -101,43 +103,91 @@ module.exports = {
         }
     },
 
-    forgotPassword: async (req, res, next) => {
+    forgotPasswordUser: async (req, res, next) => {
         try {
             const {_id, email} = req.user;
 
-            const actionToken = tokenService.createActionToken(FORGOT_PASSWORD, {_id});
+            const actionToken = tokenService.createActionToken(FORGOT_PASSWORD_USER, {_id});
 
             const url = `${FRONTEND_URL}/password/forgot-pass-page?tokenAction=${actionToken}`
             console.log(url, '****************************************************');
+
             await emailService.sendEmail(email, FORGOT_PASSWORD, {url});
-            const actionTokenSchema = await actionTokenService.createActionToken({
-                tokenType: FORGOT_PASSWORD,
+            const actionSchema = await actionTokenService.createActionToken({
+                tokenType: FORGOT_PASSWORD_USER,
                 user: _id,
                 token: actionToken
             })
 
 
-            res.json(actionTokenSchema);
+            res.json(actionSchema)
         } catch (e) {
             next(e);
         }
     },
 
-    setNewPasswordForgot: async (req, res, next) => {
+    forgotPasswordCompany: async (req, res, next) => {
         try {
-            const token = req.get(AUTHORIZATION);
+            const {_id, email} = req.company;
+
+            const actionToken = tokenService.createActionToken(FORGOT_PASSWORD_COMPANY, {_id});
+
+            const url = `${FRONTEND_URL}/password/forgot-pass-page?tokenAction=${actionToken}`
+            console.log(url, '****************************************************');
+            await emailService.sendEmail(email, FORGOT_PASSWORD, {url});
+            const actionSchema = await actionTokenService.createActionToken({
+                tokenType: FORGOT_PASSWORD_COMPANY,
+                company: _id,
+                token: actionToken
+            })
+
+
+            res.json(actionSchema)
+        } catch (e) {
+            next(e);
+        }
+    },
+
+    setNewPasswordForgotUser: async (req, res, next) => {
+        try {
             const {user} = req.tokenInfo;
             const {password} = req.body;
+            const token = req.get(AUTHORIZATION);
 
-            const previousPassword = await previousPasswordService.savePasswordInfoUser({password: user.password, user});
+            const prevPass = await previousPasswordService.savePasswordInfo({password: user.password, user: user._id})
 
             await authService.deleteManyByParams({user: user._id});
             await actionTokenService.deleteActionToken({token});
 
             const hashPassword = await tokenService.hashPassword(password);
             const updatedUser = await userService.updateUser(user._id, {password: hashPassword});
+            await sendEmail(user.email, RESET_PASSWORD, {userName: user.name});
+            res.json({updatedUser, prevPass});
+        } catch (e) {
+            next(e);
+        }
 
-            res.json({previousPassword, updatedUser});
+    },
+
+    setNewPasswordForgotCompany: async (req, res, next) => {
+        try {
+            const {company} = req.tokenInfo;
+            console.log(company);
+            const {password} = req.body;
+            const token = req.get(AUTHORIZATION);
+
+            const prevPass = await previousPasswordService.savePasswordInfoCompany({
+                password: company.password,
+                company: company._id
+            })
+
+            await authService.deleteManyByParamsCompany({company: company._id});
+            await actionTokenService.deleteActionToken({token});
+
+            const hashPassword = await tokenService.hashPassword(password);
+            const updatedCompany = await companyService.updateCompany(company._id, {password: hashPassword});
+            await sendEmail(company.email, RESET_PASSWORD, {userName: company.name});
+            res.json({updatedCompany, prevPass});
         } catch (e) {
             next(e);
         }

@@ -9,6 +9,10 @@ module.exports = {
         return ActionTokens.findOne(searchParams).populate('user');
     },
 
+    getOneBySearchParamsWithCompany: (searchParams) => {
+        return ActionTokens.findOne(searchParams).populate('company');
+    },
+
     deleteActionToken: (deleteParams) => {
         return ActionTokens.deleteMany(deleteParams);
     }
