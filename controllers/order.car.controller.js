@@ -2,8 +2,6 @@ const {orderCarService} = require("../services");
 const {ApiError} = require("../errors");
 const {sendEmail} = require("../services/email.service");
 const {ORDER_CANCEL} = require("../constants/email.action.enum");
-const dayjs = require("dayjs");
-const moment = require("moment-timezone");
 module.exports = {
 
     getAllOrders: async (req, res, next) => {
@@ -56,15 +54,9 @@ module.exports = {
 
     getAllOrdersToday: async (req, res, next) => {
         try {
-            //todo
-            // const {_id} = req.tokenInfo.user;
-
-            const x = dayjs().utc().add(1, 'day');
-            console.log(x, 'vv');
-            const today = new Date()
-            const ts = new Date('12-20-2022');
-            console.log(today, ts)
-            const orders = await orderCarService.getCarOrdersByParams({from_date:dayjs().utc()}); //todo today orders
+            const today = new Date().setHours(2, 0, 0, 0);
+            console.log(today);
+            const orders = await orderCarService.getCarOrdersByParams({from_date: today});
             res.json(orders);
         } catch (e) {
             next(e);
@@ -77,7 +69,6 @@ module.exports = {
             const {_id, email, name} = req.tokenInfo.user;
 
             const orderToDelete = await orderCarService.getCarOrderById(order_id);
-
             console.log(_id.toString(), orderToDelete.user.toString());
 
             if (_id.toString() !== orderToDelete.user.toString()) {

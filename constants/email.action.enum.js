@@ -7,5 +7,5 @@ module.exports = {
     COMPANY_CREATE: 'create_company',
     ORDER_CREATION: 'create_order',
     ORDER_CANCEL: 'cancel_order',
-    ORDER_TODAY: 'order_today', //todo
+    ORDER_TODAY: 'order_today',
 }

@@ -44,8 +44,8 @@ module.exports = {
         templateName: 'cancel-order'
     },
 
-    // [ORDER_TODAY]: {
-    //     subject: 'ORDER TODAY SUBJECT',
-    //     templateName: 'order-today'
-    // },
+    [ORDER_TODAY]: {
+        subject: 'ORDER TODAY SUBJECT',
+        templateName: 'order-today'
+    },
 }

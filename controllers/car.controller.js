@@ -1,7 +1,7 @@
 const {carService, companyService, orderCarService, tokenService} = require("../services");
 const {ApiError} = require("../errors");
 const {sendEmail} = require("../services/email.service");
-const {COMPANY_CREATE, ORDER_CREATION} = require("../constants/email.action.enum");
+const {ORDER_CREATION} = require("../constants/email.action.enum");
 
 module.exports = {
     getAllCars: async (req, res, next) => {
@@ -83,8 +83,8 @@ module.exports = {
             console.log(from_date, to_date, 'time period-----------------------1st');
 
             // const fromDate = new Date(from_date).setHours(8);
-            const fromDate = new Date(from_date).getTime();
-            const toDate = new Date(to_date).getTime();
+            const fromDate = new Date(from_date).setHours(2,0,0,0);
+            const toDate = new Date(to_date).setHours(2,0,0,0);
             const Difference_In_Time = toDate - fromDate;
             const Difference_In_Days = Difference_In_Time / (1000 * 3600 * 24);
             console.log(fromDate, toDate, Difference_In_Days);
@@ -97,8 +97,8 @@ module.exports = {
                 user: _id,
                 car: car_id,
                 car_token: carToken,
-                from_date,
-                to_date,
+                from_date: fromDate,
+                to_date: toDate,
                 Difference_In_Days
             });
 

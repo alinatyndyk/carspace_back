@@ -6,7 +6,7 @@ module.exports = {
     },
 
     getCarOrdersByParams(filter){
-        return OrderCar.find(filter);
+        return OrderCar.find(filter).populate('user');
     },
 
     deleteCarOrderById(_id){

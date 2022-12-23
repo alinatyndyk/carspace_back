@@ -8,7 +8,7 @@ module.exports = {
     ACCESS_ADMIN: 'access_admin',
     REFRESH_ADMIN: 'refresh_admin',
 
-    FORGOT_PASSWORD: 'forgot_password', //todo remove
+    // FORGOT_PASSWORD: 'forgot_password',
     FORGOT_PASSWORD_USER: 'forgot_password_user',
     FORGOT_PASSWORD_COMPANY: 'forgot_password_company',
     ORDER_CAR: 'order_car'

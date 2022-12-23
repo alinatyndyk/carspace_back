@@ -20,6 +20,7 @@ module.exports = {
 
     searchCarsWithQuery: async (req, res, next) => {
         try {
+            console.log(req.query);
             const cars = await carService.getCarsByParams(req.query);
 
             if (!cars) {
@@ -28,7 +29,7 @@ module.exports = {
 
             next();
         } catch (e) {
-            next(e) //todo if works
+            next(e)
         }
     },
 
@@ -48,21 +49,21 @@ module.exports = {
                 return a;
             };
             orders.forEach(order => {
-                console.log(order.from_date);
+                // console.log(order.from_date);
                 const daylist = getDaysArray(new Date(order.from_date).setHours(0), new Date(order.to_date).setHours(0));
                 daylist.map((v) => v.toISOString().slice(0, 10)).join("");
-                console.log(daylist, 'daylist');
+                // console.log(daylist, 'daylist');
                 const daylistBook = getDaysArray(new Date(from_date).setHours(0), new Date(to_date).setHours(0));
                 daylistBook.map((v) => v.toISOString().slice(0, 10)).join("");
-                console.log(daylistBook, 'daylistBook');
+                // console.log(daylistBook, 'daylistBook');
                 x = daylist.map(day => day.getTime());
                 y = daylistBook.map(day => day.getTime());
-                console.log(x, 'xxxx');
-                console.log(y, 'yyyy');
+                // console.log(x, 'xxxx');
+                // console.log(y, 'yyyy');
                 const output = y.filter(function (obj) {
                     return x.indexOf(obj) !== -1;
                 });
-                console.log(output, 'output *********');
+                // console.log(output, 'output *********');
                 if (output.length !== 0) {
                     next(new ApiError(`The car is taken from ${order.from_date} - ${order.to_date}`)); //todo no console
                 }

@@ -103,6 +103,36 @@ module.exports = {
         }
     },
 
+    isAccessTokenValidCancel: async (req, res, next) => {
+        try {
+            const access_token = req.get(ACCESS_TOKEN);
+            if (!access_token) {
+                return next(new ApiError('You are unauthorized. No access token for user', 401))
+            }
+
+            let tokenInfo;
+            try {
+                tokenService.checkToken(access_token, ACCESS_USER);
+                tokenInfo = await authService.getOneWithUser({access_token});
+
+            } catch (e) {
+                tokenService.checkToken(access_token, ACCESS_COMPANY)
+                tokenInfo = await authService.getOneWithCompany({access_token});
+            }
+            console.log('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
+
+            if (!tokenInfo) {
+                return next(new ApiError('No valid token for user', 401))
+            }
+
+            req.tokenInfo = tokenInfo;
+            console.log(tokenInfo, 'token user');
+            next();
+        } catch (e) {
+            next(e)
+        }
+    },
+
     isActionTokenValid: (tokenType) => async (req, res, next) => {
         try {
             const token = req.get(AUTHORIZATION);

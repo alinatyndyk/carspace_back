@@ -3,7 +3,7 @@ const {Router} = require('express');
 const {authController, orderCarController} = require("../controllers");
 const {companyMldwr, authMldwr, userMldwr, commonMldwr} = require("../middlewares");
 const {authService} = require("../services");
-const {FORGOT_PASSWORD, FORGOT_PASSWORD_USER, FORGOT_PASSWORD_COMPANY} = require("../constants/token.type.enum");
+const {FORGOT_PASSWORD_USER, FORGOT_PASSWORD_COMPANY} = require("../constants/token.type.enum");
 
 const authRouter = Router();
 
@@ -75,7 +75,7 @@ authRouter.get('/company', async (req, res) => {
 authRouter.get('/user', async (req, res) => {
     const result = await authService.getAllAuthUser(); // for admin
     res.json(result);
-});
+}); //todo remove
 
 //_______________________________________________________________
 

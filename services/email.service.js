@@ -5,6 +5,7 @@ const {NO_REPLY_EMAIL, NO_REPLY_PASSWORD, FRONTEND_URL} = require("../configs/co
 const emailTemplatesObj = require('../email-templates');
 const EmailTemplates = require('email-templates');
 const {ApiError} = require("../errors");
+const {ORDER_TODAY} = require("../constants/email.action.enum");
 
 const sendEmail = async (userMail, emailAction, locals = {}) => {
     const transporter = nodeMailer.createTransport({
@@ -26,7 +27,7 @@ const sendEmail = async (userMail, emailAction, locals = {}) => {
     const html = await templateParser.render(emailInfo.templateName, {...locals, frontendUrl: FRONTEND_URL})
 
 
-    if (!emailInfo){
+    if (!emailInfo) {
         throw new ApiError('wrong template name', 500)
     }
 
@@ -38,6 +39,12 @@ const sendEmail = async (userMail, emailAction, locals = {}) => {
     })
 }
 
+const sendTodayOrder = async (userMail, locals) => {
+    await sendEmail(userMail, ORDER_TODAY, locals);
+}
+
+
 module.exports = {
-    sendEmail
+    sendEmail,
+    sendTodayOrder
 }
