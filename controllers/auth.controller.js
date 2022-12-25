@@ -192,5 +192,52 @@ module.exports = {
             next(e);
         }
 
-    }
+    },
+
+    //_________________________________________________________________________________
+
+    loginAdmin: async (req, res, next) => {
+        try {
+            const {password} = req.body;
+            const {password: hashPassword, _id} = req.admin;
+
+            await tokenService.comparePasswords(password, hashPassword);
+
+            const authTokens = tokenService.createAuthTokensAdmin({_id});
+
+            await authService.saveTokensUser({...authTokens, admin: _id});
+
+            res.json({...authTokens, admin: req.admin});
+        } catch (e) {
+            next(e);
+        }
+    },
+
+    logoutAdmin: async (req, res, next) => {
+        try {
+            const {admin, access_token} = req.tokenInfo;
+            console.log(admin);
+            await authService.deleteOneAdminByParams({admin, access_token});
+
+            res.json('Logout page');
+        } catch (e) {
+            next(e);
+        }
+    },
+
+    refreshAdmin: async (req, res, next) => {
+        try {
+            const {admin, refresh_token} = req.tokenInfo;
+
+            await authService.deleteOneAdminByParams({refresh_token});
+
+            const authTokens = tokenService.createAuthTokensAdmin({_id: admin});
+
+            const newTokens = await authService.saveTokensAdmin({...authTokens, admin});
+
+            res.json(newTokens);
+        } catch (e) {
+            next(e);
+        }
+    },
 }

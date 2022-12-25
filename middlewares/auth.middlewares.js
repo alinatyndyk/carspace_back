@@ -103,36 +103,6 @@ module.exports = {
         }
     },
 
-    isAccessTokenValidCancel: async (req, res, next) => {
-        try {
-            const access_token = req.get(ACCESS_TOKEN);
-            if (!access_token) {
-                return next(new ApiError('You are unauthorized. No access token for user', 401))
-            }
-
-            let tokenInfo;
-            try {
-                tokenService.checkToken(access_token, ACCESS_USER);
-                tokenInfo = await authService.getOneWithUser({access_token});
-
-            } catch (e) {
-                tokenService.checkToken(access_token, ACCESS_COMPANY)
-                tokenInfo = await authService.getOneWithCompany({access_token});
-            }
-            console.log('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
-
-            if (!tokenInfo) {
-                return next(new ApiError('No valid token for user', 401))
-            }
-
-            req.tokenInfo = tokenInfo;
-            console.log(tokenInfo, 'token user');
-            next();
-        } catch (e) {
-            next(e)
-        }
-    },
-
     isActionTokenValid: (tokenType) => async (req, res, next) => {
         try {
             const token = req.get(AUTHORIZATION);
@@ -214,12 +184,12 @@ module.exports = {
             }
             tokenService.checkToken(access_token, ACCESS_ADMIN);
 
-            const tokenInfo = await authService.getOneWithUser({access_token});
+            const tokenInfo = await authService.getOneWithAdmin({access_token});
 
             console.log(tokenInfo, '----------------------------------------token info');
 
             if (!tokenInfo) {
-                return next(new ApiError('No valid token for user', 401))
+                return next(new ApiError('No valid token for admin', 401))
             }
             req.tokenInfo = tokenInfo;
 
@@ -233,15 +203,15 @@ module.exports = {
         try {
             const refresh_token = req.get(REFRESH_TOKEN);
             if (!refresh_token) {
-                return next(new ApiError('You are unauthorized. No refresh token for user', 401))
+                return next(new ApiError('You are unauthorized. No refresh token for admin', 401))
             }
 
             tokenService.checkToken(refresh_token, REFRESH_ADMIN);
 
-            const tokenInfo = await authService.getOneWithUser({refresh_token});
+            const tokenInfo = await authService.getOneWithAdmin({refresh_token});
 
             if (!tokenInfo) {
-                return next(new ApiError('No valid refresh token for user', 401));
+                return next(new ApiError('No valid refresh token for admin', 401));
             }
 
             req.tokenInfo = tokenInfo;

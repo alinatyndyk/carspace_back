@@ -21,7 +21,6 @@ const NumberValidator = Joi.object({
     contact_number: numberValidator.required().error(new ApiError('The number is not valid', 400)),
 });
 
-
 module.exports = {
     PasswordValidator,
     EmailValidator,

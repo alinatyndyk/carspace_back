@@ -57,7 +57,7 @@ module.exports = {
     },
 
     createAuthTokensCompany: (payload = {}) => {
-        const access_token = jwt.sign(payload, ACCESS_SECRET_WORD_COMPANY, {expiresIn: '10m'})
+        const access_token = jwt.sign(payload, ACCESS_SECRET_WORD_COMPANY, {expiresIn: '30m'})
         const refresh_token = jwt.sign(payload, REFRESH_SECRET_WORD_COMPANY, {expiresIn: '30d'})
 
         return {

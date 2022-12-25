@@ -1,7 +1,7 @@
 const {Router} = require('express');
 
 const {authController, orderCarController} = require("../controllers");
-const {companyMldwr, authMldwr, userMldwr, commonMldwr} = require("../middlewares");
+const {companyMldwr, authMldwr, userMldwr, commonMldwr, adminMldwr} = require("../middlewares");
 const {authService} = require("../services");
 const {FORGOT_PASSWORD_USER, FORGOT_PASSWORD_COMPANY} = require("../constants/token.type.enum");
 
@@ -41,7 +41,29 @@ authRouter.post('/company/refresh',
     authController.refreshCompany
 );
 
+//--------------------------------------------------------------
+
+//todo admin forgot pass
+
+authRouter.post('/admin/login',
+    adminMldwr.adminBodyValid('loginAdminValidator'),
+    adminMldwr.getAdminDynamically('body', 'contact_number'),
+    authController.loginAdmin
+);
+
+authRouter.post('/admin/logout',
+    authMldwr.isAccessTokenValidAdmin,
+    authController.logoutAdmin
+);
+
+authRouter.post('/admin/refresh',
+    authMldwr.isRefreshTokenValidAdmin,
+    authController.refreshAdmin
+);
+
 //______________________________________________________________
+
+//todo pass reset no forgot
 
 authRouter.post('/password_forgot/user',
     commonMldwr.isBodyValid('EmailValidator'),

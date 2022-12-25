@@ -1,4 +1,4 @@
-const {AuthCompany, AuthUser} = require('../dataBase')
+const {AuthCompany, AuthUser, AuthAdmin} = require('../dataBase')
 
 module.exports = {
     saveTokensCompany(tokens) {
@@ -30,8 +30,20 @@ module.exports = {
         return AuthUser.create(tokens)
     },
 
+    saveTokensAdmin(tokens) {
+        return AuthAdmin.create(tokens)
+    },
+
+    deleteOneAdminByParams(filter) {
+        return AuthAdmin.deleteOne(filter);
+    },
+
     getOneWithUser(filter) {
         return AuthUser.findOne(filter).populate('user');
+    },
+
+    getOneWithAdmin(filter) {
+        return AuthAdmin.findOne(filter).populate('admin');
     },
 
     getOneUserByParams(filter) {
