@@ -3,6 +3,7 @@ module.exports = {
     Car: require('./Car'),
     Company: require('./Company'),
     Brand: require('./Brand'),
+    Image_model: require('./Image'),
     Admin: require('./Admin'),
     AuthCompany: require('./AuthCompany'),
     AuthUser: require('./AuthUser'),

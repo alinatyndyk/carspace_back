@@ -18,21 +18,6 @@ module.exports = {
         }
     },
 
-    searchCarsWithQuery: async (req, res, next) => {
-        try {
-            console.log(req.query);
-            const cars = await carService.getCarsByParams(req.query);
-
-            if (!cars) {
-                return next(new ApiError('Cars were not found. Try later', 404));
-            }
-
-            next();
-        } catch (e) {
-            next(e)
-        }
-    },
-
     isCarTaken: (from = 'params') => async (req, res, next) => {
         try {
             const {car_id} = req[from];

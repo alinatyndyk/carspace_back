@@ -6,7 +6,7 @@ const {
     userService,
     emailService, companyService
 } = require("../services");
-const {FORGOT_PASSWORD, FORGOT_PASSWORD_USER, FORGOT_PASSWORD_COMPANY} = require("../constants/token.type.enum");
+const {FORGOT_PASSWORD,FORGOT_PASSWORD_USER, FORGOT_PASSWORD_COMPANY} = require("../constants/token.type.enum");
 const {FRONTEND_URL} = require("../configs/configs");
 const {AUTHORIZATION} = require("../constants/constants");
 const {sendEmail} = require("../services/email.service");
@@ -24,7 +24,7 @@ module.exports = {
 
             await authService.saveTokensCompany({...authTokens, company: _id});
 
-            res.json({...authTokens, company: req.company});
+            res.json(authTokens);
         } catch (e) {
             next(e);
         }
@@ -66,10 +66,11 @@ module.exports = {
             await tokenService.comparePasswords(password, hashPassword);
 
             const authTokens = tokenService.createAuthTokensUser({_id});
+            console.log(authTokens);
 
             await authService.saveTokensUser({...authTokens, user: _id});
 
-            res.json({...authTokens, user: req.user});
+            res.json(authTokens);
         } catch (e) {
             next(e);
         }
@@ -107,20 +108,21 @@ module.exports = {
         try {
             const {_id, email} = req.user;
 
-            const actionToken = tokenService.createActionToken(FORGOT_PASSWORD_USER, {_id});
+            const action_token = tokenService.createActionToken(FORGOT_PASSWORD_USER, {_id});
 
-            const url = `${FRONTEND_URL}/password/forgot-pass-page?tokenAction=${actionToken}`
+            const url = `http://localhost:3000/password-reset?tokenAction=${action_token}`
             console.log(url, '****************************************************');
+            console.log(action_token, '-----------------------------------------------');
 
             await emailService.sendEmail(email, FORGOT_PASSWORD, {url});
             const actionSchema = await actionTokenService.createActionToken({
                 tokenType: FORGOT_PASSWORD_USER,
                 user: _id,
-                token: actionToken
+                token: action_token
             })
 
 
-            res.json(actionSchema)
+            res.json({action_token})
         } catch (e) {
             next(e);
         }
@@ -130,19 +132,19 @@ module.exports = {
         try {
             const {_id, email} = req.company;
 
-            const actionToken = tokenService.createActionToken(FORGOT_PASSWORD_COMPANY, {_id});
+            const action_token = tokenService.createActionToken(FORGOT_PASSWORD_COMPANY, {_id});
 
-            const url = `${FRONTEND_URL}/password/forgot-pass-page?tokenAction=${actionToken}`
+            const url = `http://localhost:3000/password-reset/company?tokenAction=${action_token}`
             console.log(url, '****************************************************');
             await emailService.sendEmail(email, FORGOT_PASSWORD, {url});
             const actionSchema = await actionTokenService.createActionToken({
                 tokenType: FORGOT_PASSWORD_COMPANY,
                 company: _id,
-                token: actionToken
+                token: action_token
             })
 
 
-            res.json(actionSchema)
+            res.json({action_token})
         } catch (e) {
             next(e);
         }

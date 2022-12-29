@@ -9,7 +9,7 @@ const stripe = require('stripe')('sk_test_51MIX9gIAfGNWX8Hhl3mH4IFJladHRo1ErYUQv
 module.exports = {
     getAllCars: async (req, res, next) => {
         try {
-            const cars = await carService.getAllCars()
+            const cars = await carService.getAllCars(req.query);
             res.json(cars);
         } catch (e) {
             next(e);

@@ -1,5 +1,4 @@
 const {Schema, model} = require('mongoose');
-const {string} = require("joi");
 
 const userSchema = new Schema({
     name: {type: String, trim: true, required: true},
@@ -7,7 +6,10 @@ const userSchema = new Schema({
     age: {type: Number, required: true},
     contact_number: {type: String, required: true},
     email: {type: String, trim: true, lowercase: true, required: true, unique: true},
-    password: {type: String, required: true}
+    password: {type: String, required: true},
+    image: {
+        data: Buffer
+    },
 })
 
 module.exports = model('user', userSchema);

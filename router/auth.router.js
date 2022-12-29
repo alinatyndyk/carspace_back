@@ -66,7 +66,7 @@ authRouter.post('/admin/refresh',
 //todo pass reset no forgot
 
 authRouter.post('/password_forgot/user',
-    commonMldwr.isBodyValid('EmailValidator'),
+    userMldwr.userBodyValid('userEmailValidator'),
     userMldwr.getUserDynamically('body', 'email'),
     authController.forgotPasswordUser);
 

@@ -26,7 +26,8 @@ module.exports = {
     createBrand: async (req, res, next) => {
         try {
             const {brand: carBrand} = req.body;
-            const brand = await brandService.createBrand({...req.body});
+            const brand_db = carBrand.replace(/\s/g, '_');
+            const brand = await brandService.createBrand({...req.body, brand_db});
             await regexBrandPush(carBrand);
             //brand validtor
             res.json(brand);

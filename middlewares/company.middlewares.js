@@ -9,8 +9,9 @@ module.exports = {
             const company = await companyService.getOneByParams({[dbField]: fieldToSearch});
 
             if (!company) {
-                return next(new ApiError('User is not found', 400));
+                return next(new ApiError('Company is not found', 400));
             }
+            console.log(company);
             req.company = company;
 
             next();

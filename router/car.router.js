@@ -8,7 +8,6 @@ const {orderCarController} = require("../controllers");
 const carRouter = Router();
 
 carRouter.get('/',
-    carMldwr.searchCarsWithQuery,
     carController.getAllCars); // everyone
 
 carRouter.get('/:car_id', carController.getCarById); //everyone
