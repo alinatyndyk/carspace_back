@@ -24,6 +24,7 @@ module.exports = {
     userBodyValid: (validatorType) => async (req, res, next) => {
         try {
             console.log(validatorType);
+            console.log(req.body, 'in user valid');
             const validate = userValidators[validatorType].validate(req.body);
 
             if (validate.error) {

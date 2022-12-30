@@ -22,8 +22,19 @@ userRouter.get('/:user_id',
 //     userController.createUserImg,
 // ); // everyone
 
+
+// const {email, name, password} = req.body;
+// console.log('crate user', email, name, password);
+// const hashPassword = await tokenService.hashPassword(req.body.password);
+// await sendEmail(email, CREATE_USER, {userName: name});
+// console.log(name);
 //---------------------------------------------------------------------------------
 const multer = require('multer');
+const {userValidators} = require("../validators");
+const {ApiError} = require("../errors");
+const {tokenService} = require("../services");
+const {sendEmail} = require("../services/email.service");
+const {CREATE_USER} = require("../constants/email.action.enum");
 const storage = multer.diskStorage({
     destination: 'Images',
     filename: (req, file, cb) => {
@@ -34,15 +45,26 @@ const storage = multer.diskStorage({
 const upload = multer({storage: storage}).single('testImage');
 
 
-userRouter.post('/',(req, res) => {
-    upload(req, res, (err) => {
+userRouter.post('/',(req, res, next) => {
+    upload(req, res, async (err) => {
+
+        const validate = userValidators.newUserValidator.validate(req.body);
+
+        if (validate.error) {
+            console.log('validate error', validate.error.message);
+            return next(new ApiError(validate.error.message, 400))
+        }
+
         console.log(req.body, 'req body img');
         console.log(req.file, 'req file');
-        if (err) {
-            console.log(err);
+        const {email, name} = req.body;
+        const hashPassword = await tokenService.hashPassword(req.body.password);
+        await sendEmail(email, CREATE_USER, {userName: name});
+        if (!req.file) {
+            return next( new ApiError('Upload at least one picture', 400))
         } else {
             const newImage = new User({
-                ...req.body,
+                ...req.body, password: hashPassword,
                 image: {
                     data: req.file.filename
                 }
