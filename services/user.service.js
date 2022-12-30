@@ -24,4 +24,8 @@ module.exports = {
     deleteUser(_id) {
         return User.findByIdAndDelete(_id)
     },
+
+    deleteUsers(filter={}) {
+        return User.deleteMany(filter)
+    },
 }

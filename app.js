@@ -34,42 +34,44 @@ app.use('/brands', brandRouter)
 app.use('/auth', authRouter)
 app.use('/payment', paymentRouter)
 
-const path = require('path');
-const {Image_model} = require("./dataBase");
+// const path = require('path');
+// const {Image_model} = require("./dataBase");
+// const storage = multer.diskStorage({
+//     destination: 'Images',
+//     filename: (req, file, cb) => {
+//         console.log(file);
+//         cb(null, file.originalname);
+//     }
+// })
+// const upload = multer({storage: storage}).single('testImage');
+
+// app.post('/upload', (req, res) => {
+//     upload(req, res, (err) => {
+//         console.log(req.body, 'req body img');
+//         console.log(req.file, 'req file');
+//         if (err) {
+//             console.log(err);
+//         } else {
+//             const newImage = new Image_model({
+//                 name: req.body.name,
+//                 image: {
+//                     data: req.file.filename
+//                 }
+//             })
+//             newImage.save()
+//                 .then(() => res.send('successfully uploaded'))
+//                 .catch(err => console.log(err))
+//         }
+//     })
+// });
+
+app.use('/photos', express.static('Images'))
 const multer = require('multer');
-const storage = multer.diskStorage({
-    destination: 'Images',
-    filename: (req, file, cb) => {
-        console.log(file);
-        cb(null, file.originalname);
-    }
-})
-const upload = multer({storage: storage}).single('testImage');
-
-app.post('/upload', (req, res) => {
-    upload(req, res, (err) => {
-        console.log(req.body, 'req body img');
-        console.log(req.file, 'req file');
-        if (err) {
-            console.log(err);
-        } else {
-            const newImage = new Image_model({
-                name: req.body.name,
-                image: {
-                    data: req.file.filename
-                }
-            })
-            newImage.save()
-                .then(() => res.send('successfully uploaded'))
-                .catch(err => console.log(err))
-        }
-    })
+app.get('/upload/:path', (req, res) => {
+    console.log(req.params);
+    // res.download('Images/'+req.params.path)
+    res.render('Images/' + req.params.path)
 });
-
-app.get('/upload', (req, res) => {
-    res.send('upload file');
-});
-
 app.use('*', (req, res, next) => {
     next(new Error('Route not found'))
 });

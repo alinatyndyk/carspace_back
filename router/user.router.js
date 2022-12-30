@@ -32,7 +32,7 @@ userRouter.get('/:user_id',
 const multer = require('multer');
 const {userValidators} = require("../validators");
 const {ApiError} = require("../errors");
-const {tokenService} = require("../services");
+const {tokenService, userService} = require("../services");
 const {sendEmail} = require("../services/email.service");
 const {CREATE_USER} = require("../constants/email.action.enum");
 const storage = multer.diskStorage({
@@ -66,7 +66,8 @@ userRouter.post('/',(req, res, next) => {
             const newImage = new User({
                 ...req.body, password: hashPassword,
                 image: {
-                    data: req.file.filename
+                    data: req.file.filename,
+                    link: `http://localhost:5000/photos/${req.file.filename}`
                 }
             })
             newImage.save()
@@ -89,5 +90,10 @@ userRouter.delete('/:user_id',
     userMldwr.isUserPresent(),
     authMldwr.isAccessTokenValidUser,
     userController.deleteUser); //only with a users token --done
+ //-------------------------------------------------------------
+userRouter.delete('/', async (req, res) => {
+    await userService.deleteUsers();
+    res.send('Users are empty');
+})
 
 module.exports = userRouter;

@@ -8,8 +8,8 @@ const userSchema = new Schema({
     email: {type: String, trim: true, lowercase: true, required: true, unique: true},
     password: {type: String, required: true},
     image: {
-        data: Buffer,
-        contentType: String
+        data: String,
+        link: String
     },
 })
 
