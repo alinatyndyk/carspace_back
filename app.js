@@ -49,14 +49,14 @@ const upload = multer({storage: storage}).single('testImage');
 app.post('/upload', (req, res) => {
     upload(req, res, (err) => {
         console.log(req.body, 'req body img');
+        console.log(req.file, 'req file');
         if (err) {
             console.log(err);
         } else {
             const newImage = new Image_model({
                 name: req.body.name,
                 image: {
-                    data: req.file.filename,
-                    contentType: 'image/png'
+                    data: req.file.filename
                 }
             })
             newImage.save()

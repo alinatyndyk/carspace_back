@@ -4,6 +4,7 @@ const {WELCOME, DELETE_USER, CREATE_USER} = require("../constants/email.action.e
 const {sendEmail} = require("../services/email.service");
 const {User, Image_model} = require("../dataBase");
 const multer = require('multer');
+const {Error} = require("mongoose");
 const storage = multer.diskStorage({
     destination: 'Images',
     filename: (req, file, cb) => {
@@ -33,17 +34,17 @@ module.exports = {
         }
     },
 
-    createUser: async (req, res, next) => {
-        try {
-            const {email, name} = req.body;
-            const hashPassword = await tokenService.hashPassword(req.body.password)
-            await sendEmail(email, CREATE_USER, {userName: name});
-            const createdUser = await userService.createUser({...req.body, password: hashPassword});
-            res.json(createdUser);
-        } catch (e) {
-            next(e);
-        }
-    },
+    // createUser: async (req, res, next) => {
+    //     try {
+    //         const {email, name} = req.body;
+    //         const hashPassword = await tokenService.hashPassword(req.body.password)
+    //         await sendEmail(email, CREATE_USER, {userName: name});
+    //         const createdUser = await userService.createUser({...req.body, password: hashPassword});
+    //         res.json(createdUser);
+    //     } catch (e) {
+    //         next(e);
+    //     }
+    // },
 
     createUserImg: (req, res) => {
         // const {email, name, password} = req.body;
@@ -58,16 +59,17 @@ module.exports = {
                 console.log(err);
             } else {
                 console.log('in else', req.body);
+                console.log(req.file, 'req.file');
                 const newImage = new User({
                     ...req.body,
                     image: {
-                        data: req.file.filename,
+                        data: req.file,
                         contentType: 'image/png'
                     }
                 })
                 newImage.save()
                     .then(() => res.send('successfully uploaded'))
-                    .catch(err => console.log(err))
+                    .catch(err => new Error('Something is wrong'))
             }
         })
     },
