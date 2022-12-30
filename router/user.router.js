@@ -18,7 +18,8 @@ userRouter.get('/:user_id',
 userRouter.post('/',
     userMldwr.userBodyValid('newUserValidator'),
     userMldwr.uniqueUserEmail,
-    userController.createUser); // everyone
+    userController.createUser,
+); // everyone
 
 userRouter.patch('/:user_id',
     commonMldwr.validIdMldwr('user_id', 'params'),

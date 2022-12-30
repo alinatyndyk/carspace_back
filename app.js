@@ -35,8 +35,8 @@ app.use('/auth', authRouter)
 app.use('/payment', paymentRouter)
 
 const path = require('path');
-const multer = require('multer');
 const {Image_model} = require("./dataBase");
+const multer = require('multer');
 const storage = multer.diskStorage({
     destination: 'Images',
     filename: (req, file, cb) => {
@@ -48,12 +48,13 @@ const upload = multer({storage: storage}).single('testImage');
 
 app.post('/upload', (req, res) => {
     upload(req, res, (err) => {
-        if(err){
+        console.log(req.body, 'req body img');
+        if (err) {
             console.log(err);
         } else {
             const newImage = new Image_model({
                 name: req.body.name,
-                image:{
+                image: {
                     data: req.file.filename,
                     contentType: 'image/png'
                 }

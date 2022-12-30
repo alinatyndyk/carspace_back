@@ -2,6 +2,16 @@ const {userService, tokenService} = require("../services");
 const {ApiError} = require("../errors");
 const {WELCOME, DELETE_USER, CREATE_USER} = require("../constants/email.action.enum");
 const {sendEmail} = require("../services/email.service");
+const {User, Image_model} = require("../dataBase");
+const multer = require('multer');
+const storage = multer.diskStorage({
+    destination: 'Images',
+    filename: (req, file, cb) => {
+        console.log(file);
+        cb(null, file.originalname);
+    }
+})
+const upload = multer({storage: storage}).single('testImage');
 
 module.exports = {
     getAllUsers: async (req, res, next) => {
@@ -29,11 +39,37 @@ module.exports = {
             const hashPassword = await tokenService.hashPassword(req.body.password)
             await sendEmail(email, CREATE_USER, {userName: name});
             const createdUser = await userService.createUser({...req.body, password: hashPassword});
-
             res.json(createdUser);
         } catch (e) {
             next(e);
         }
+    },
+
+    createUserImg: (req, res) => {
+        // const {email, name, password} = req.body;
+        // console.log('crate user', email, name, password);
+        // const hashPassword = await tokenService.hashPassword(req.body.password);
+        // await sendEmail(email, CREATE_USER, {userName: name});
+        // console.log(name);
+        upload(req, res, (err) => {
+            console.log(req.body, 'in upload');
+            console.log(req.file);
+            if (err) {
+                console.log(err);
+            } else {
+                console.log('in else', req.body);
+                const newImage = new User({
+                    ...req.body,
+                    image: {
+                        data: req.file.filename,
+                        contentType: 'image/png'
+                    }
+                })
+                newImage.save()
+                    .then(() => res.send('successfully uploaded'))
+                    .catch(err => console.log(err))
+            }
+        })
     },
 
     updateUser: async (req, res, next) => {
