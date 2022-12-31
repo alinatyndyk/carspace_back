@@ -60,6 +60,7 @@ module.exports = {
 // ------------------------------------------------------------------------
     loginUser: async (req, res, next) => {
         try {
+            console.log(req.body, 'in login user');
             const {password} = req.body;
             const {password: hashPassword, _id} = req.user;
 

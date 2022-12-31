@@ -3,8 +3,20 @@ const {ApiError} = require("../errors");
 const {sendEmail} = require("../services/email.service");
 const {ORDER_CREATION} = require("../constants/email.action.enum");
 const {BRANDS} = require("../constants/regex.enum");
+const multer = require("multer");
+const {userMldwr, carMldwr} = require("../middlewares");
+const {carValidators} = require("../validators");
+const {Car} = require("../dataBase");
+const storage = multer.diskStorage({
+    destination: 'Images',
+    filename: (req, file, cb) => {
+        console.log(file);
+        cb(null, file.originalname);
+    }
+})
+const upload = multer({storage: storage}).single('testImage');
 
-const stripe = require('stripe')('sk_test_51MIX9gIAfGNWX8Hhl3mH4IFJladHRo1ErYUQv2ZEIWdfJIwKXvk5zHwOGUrntdnmJz7af89NUZFm94dVRYV00fRl00gqg3UAPA');
+// const stripe = require('stripe')('sk_test_51MIX9gIAfGNWX8Hhl3mH4IFJladHRo1ErYUQv2ZEIWdfJIwKXvk5zHwOGUrntdnmJz7af89NUZFm94dVRYV00fRl00gqg3UAPA');
 
 module.exports = {
     getAllCars: async (req, res, next) => {
@@ -48,6 +60,52 @@ module.exports = {
         } catch (e) {
             next(e);
         }
+    },
+
+    createCarImg: async (req, res, next) => {
+            upload(req, res, async (err) => {
+                console.log(req.body, 'req body in upload');
+                console.log(req.file, 'req file');
+                const {brand} = req.body;
+                console.log(brand, 'brand in upload');
+                console.log(BRANDS.includes(brand));
+
+                if (BRANDS.includes(brand) === false) {
+                    console.log('not includes');
+                    return next(new ApiError('Not includes this brand', 400));
+                }
+                const brand_db = brand.replace(/\s/g, '_');
+                console.log(brand_db, 'brand_db');
+                const validate = carValidators.newCarValidator.validate(req.body);
+
+                if (validate.error) {
+                    console.log(validate.error.message, 'validate car error');
+                    return next(new ApiError(validate.error.message, 400))
+                }
+
+                if (!req.file) {
+                    return next(new ApiError('Upload at least one picture', 400))
+                } else {
+                    console.log(req.body, 'req body in else');
+                    const newCar = new Car({
+                        ...req.body, brand_db,
+                        image: {
+                            data: req.file.filename,
+                            link: `http://localhost:5000/photos/${req.file.filename}`
+                        }
+                    })
+                    newCar.save()
+                        .then(() => res.send(newCar))
+                        .catch(err => console.log(err))
+
+                    const {_id} = req.tokenInfo.company;
+                    const companyCars = await carService.getCarsByParams({company: _id});
+                    const brandCars = await carService.getCarsByParams({brand});
+                    await companyService.updateCompany(_id, {cars: [...companyCars]});
+                    await brandService.updateBrand({brand}, {cars: [...brandCars]});
+
+                }
+            })
     },
 
     updateCar: async (req, res, next) => {
@@ -121,17 +179,17 @@ module.exports = {
 //-------------------------------------------------------------------------------------------------------
 
             // Create a PaymentIntent with the order amount and currency
-            const paymentIntent = await stripe.paymentIntents.create({
-                amount: price_day_basis,
-                currency: "usd",
-                automatic_payment_methods: {
-                    enabled: true,
-                },
-            });
-
-            res.send({
-                clientSecret: paymentIntent.client_secret,
-            });
+            // const paymentIntent = await stripe.paymentIntents.create({
+            //     amount: price_day_basis,
+            //     currency: "usd",
+            //     automatic_payment_methods: {
+            //         enabled: true,
+            //     },
+            // });
+            //
+            // res.send({
+            //     clientSecret: paymentIntent.client_secret,
+            // });
 
             //---------------------------------------------------------------------
 

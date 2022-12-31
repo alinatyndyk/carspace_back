@@ -8,14 +8,16 @@ const yearValidator = Joi.number();
 const minAgeValidator = Joi.number().min(18).max(85)
 const priceValidator = Joi.number();
 const rentValidator = Joi.number();
+const imageValidator = Joi.any()
 
 const newCarValidator = Joi.object({
     brand: brandValidator.required(),
     model: modelValidator.required(),
     model_year: yearValidator.required(),
-    min_drivers_age: minAgeValidator.required(), // --done
-    min_rent_time: rentValidator.required(), // --done
-    price_day_basis: priceValidator.required(),
+    // min_drivers_age: minAgeValidator.required(), // --done
+    // min_rent_time: rentValidator.required(), // --done
+    // price_day_basis: priceValidator.required(),
+    testImage: imageValidator
 });
 
 const updateCarValidator = Joi.object({

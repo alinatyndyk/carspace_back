@@ -3,9 +3,13 @@ const {Schema, model} = require('mongoose');
 const carSchema = new Schema({
     brand: {type: String, trim: true, required: true},
     brand_db: {type: String, trim: true, lowercase: true},
-    location: {type: String, trim: true, lowercase: true, required: true},
     model: {type: String, required: true},
     model_year: {type: Number, required: true},
+    image: {
+        data: String,
+        link: String
+    },
+    // location: {type: String, trim: true, lowercase: true, required: true},
     // min_drivers_age: {type: Number, trim: true, required: true},
     // min_rent_time: {type: Number, trim: true, required: true},
     // driver_included: {type: Boolean, required: true},

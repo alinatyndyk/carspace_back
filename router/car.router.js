@@ -14,8 +14,8 @@ carRouter.get('/:car_id', carController.getCarById); //everyone
 
 carRouter.post('/',  // only a company with a token --done
     authMldwr.isAccessTokenValidCompany,
-    carMldwr.carBodyValid('newCarValidator'),
-    carController.createCar);
+    // carMldwr.carBodyValid('newCarValidator'),
+    carController.createCarImg);
 
 carRouter.delete('/:car_id',  // only a company with a token --done
     commonMldwr.validIdMldwr('car_id', 'params'),
