@@ -5,6 +5,7 @@ const carSchema = new Schema({
     brand_db: {type: String, trim: true, lowercase: true},
     model: {type: String, required: true},
     model_year: {type: Number, required: true},
+    description: {type: String, trim: true, default: 'No description', required: true},
     image: {
         data: String,
         link: String
@@ -23,7 +24,6 @@ const carSchema = new Schema({
     // price_week_basis: {type: Number, required: true},
     // security_deposit: {type: Number, required: true},
     // add_milage_charge: {type: Number, required: true},
-    // description: {type: String, trim: true, default: 'No description', required: true},
     // status: {type: String}, todo if recieved ask sergey
     company: {
         type: Schema.Types.ObjectId,

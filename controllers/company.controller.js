@@ -2,6 +2,20 @@ const {companyService, tokenService} = require("../services");
 const {ApiError} = require("../errors");
 const {sendEmail} = require("../services/email.service");
 const {COMPANY_CREATE} = require("../constants/email.action.enum");
+const {User, Company} = require("../dataBase");
+const {Error} = require("mongoose");
+const multer = require("multer");
+const {companyValidators} = require("../validators");
+const storage = multer.diskStorage({
+    destination: 'Images',
+    filename: (req, file, cb) => {
+        console.log(file);
+        cb(null, file.originalname);
+    }
+})
+const upload = multer({storage: storage}).single('testImage');
+
+
 module.exports = {
     getAllCompanies: async (req, res, next) => {
         try {
@@ -22,16 +36,59 @@ module.exports = {
         }
     },
 
-    createCompany: async (req, res, next) => {
-        try {
-            const {email, name} = req.body;
-            const hashPassword = await tokenService.hashPassword(req.body.password);
-            await sendEmail(email, COMPANY_CREATE, {companyName: name});
-            const company = await companyService.createCompany({...req.body, password: hashPassword});
-            res.json(company);
-        } catch (e) {
-            next(e);
-        }
+    // createCompany: async (req, res, next) => {
+    //     try {
+    //         const {email, name} = req.body;
+    //         const hashPassword = await tokenService.hashPassword(req.body.password);
+    //         await sendEmail(email, COMPANY_CREATE, {companyName: name});
+    //         const company = await companyService.createCompany({...req.body, password: hashPassword});
+    //         res.json(company);
+    //     } catch (e) {
+    //         next(e);
+    //     }
+    // },
+
+    createCompanyImg: async (req, res, next) => {
+            // const company = await companyService.createCompany({...req.body, password: hashPassword});
+            // res.json(company);
+
+            upload(req, res, async (err) => {
+                console.log(req.body, 'in upload');
+                console.log(req.file);
+
+                const validate = companyValidators.newCompanyValidator.validate(req.body);
+
+                if (validate.error) {
+                    return next(new ApiError(validate.error.message, 400))
+                }
+                const {email, name, contact_number} = req.body;
+
+                const company = await companyService.getOneByParams({contact_number});
+
+                if (company) {
+                    return next(new ApiError('This number is already in use', 400));
+                }
+
+                const hashPassword = await tokenService.hashPassword(req.body.password);
+                await sendEmail(email, COMPANY_CREATE, {companyName: name});
+                if (!req.file) {
+                    return next(new ApiError('Upload at least one picture', 400))
+                } else {
+                    console.log('in else', req.body);
+                    console.log(req.file, 'req.file');
+                    const newCompany = new Company({
+                        ...req.body,
+                        password: hashPassword,
+                        image: {
+                            data: req.file.filename,
+                            link: `http://localhost:5000/photos/${req.file.filename}`
+                        }
+                    })
+                    newCompany.save()
+                        .then(() => res.send(newCompany))
+                        .catch(err => new Error(err))
+                }
+            })
     },
 
     updateCompany: async (req, res, next) => {

@@ -16,6 +16,7 @@ module.exports = {
     loginCompany: async (req, res, next) => {
         try {
             const {password} = req.body;
+            console.log(password);
             const {password: hashPassword, _id} = req.company;
 
             await tokenService.comparePasswords(password, hashPassword);
@@ -52,7 +53,7 @@ module.exports = {
 
             const newTokens = await authService.saveTokensCompany({...authTokens, company});
 
-            res.json(newTokens);
+            res.json(authTokens);
         } catch (e) {
             next(e);
         }
@@ -99,7 +100,7 @@ module.exports = {
 
             const newTokens = await authService.saveTokensUser({...authTokens, user});
 
-            res.json(newTokens);
+            res.json(authTokens);
         } catch (e) {
             next(e);
         }

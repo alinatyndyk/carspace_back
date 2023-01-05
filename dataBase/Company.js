@@ -9,7 +9,11 @@ const companySchema = new Schema({
     cars: {
         type: [Schema.Types.ObjectId],
         ref: 'car'
-    }
+    },
+    image: {
+        data: String,
+        link: String
+    },
 })
 
 module.exports = model('company', companySchema);

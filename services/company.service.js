@@ -7,7 +7,7 @@ module.exports = {
     },
 
     getCompanyById(id){
-        return Company.findById(id);
+        return Company.findById(id).populate('cars');
     },
 
     getOneByParams(filter) {
@@ -24,5 +24,9 @@ module.exports = {
 
     deleteCompany(id){
         return Company.findByIdAndDelete(id);
+    },
+
+    deleteCompanies(filter = {}){
+        return Company.deleteMany(filter);
     },
 }

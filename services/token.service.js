@@ -47,22 +47,22 @@ module.exports = {
     // },
 
     createAuthTokensUser: (payload = {}) => {
-        const access_token = jwt.sign(payload, ACCESS_SECRET_WORD_USER, {expiresIn: '30m'})
+        const access_token = jwt.sign(payload, ACCESS_SECRET_WORD_USER, {expiresIn: '10m'})
         const refresh_token = jwt.sign(payload, REFRESH_SECRET_WORD_USER, {expiresIn: '30d'})
 
         return {
-            access_token,
-            refresh_token
+            access_token: `User ${access_token}`,
+            refresh_token: `User ${refresh_token}`
         }
     },
 
     createAuthTokensCompany: (payload = {}) => {
-        const access_token = jwt.sign(payload, ACCESS_SECRET_WORD_COMPANY, {expiresIn: '30m'})
-        const refresh_token = jwt.sign(payload, REFRESH_SECRET_WORD_COMPANY, {expiresIn: '30d'})
+        const access_token = jwt.sign(payload, ACCESS_SECRET_WORD_COMPANY, {expiresIn: '1m'})
+        const refresh_token = jwt.sign(payload, REFRESH_SECRET_WORD_COMPANY, {expiresIn: '2m'})
 
         return {
-            access_token,
-            refresh_token
+            access_token: `Company ${access_token}`,
+            refresh_token: `Company ${refresh_token}`
         }
     },
 
@@ -102,6 +102,8 @@ module.exports = {
         try {
 
             let word;
+            let cut = token;
+            let first;
             switch (tokenType) {
                 case ACCESS:
                     word = ACCESS_SECRET_WORD
@@ -111,15 +113,23 @@ module.exports = {
                     break;
                 case ACCESS_USER:
                     word = ACCESS_SECRET_WORD_USER
+                    cut = token.substr(token.indexOf(" ") + 1);
                     break;
                 case REFRESH_USER:
                     word = REFRESH_SECRET_WORD_USER
+                    cut = token.substr(token.indexOf(" ") + 1);
+                    first = token.split(' ')[0]
+                    console.log(first);
                     break;
                 case ACCESS_COMPANY:
                     word = ACCESS_SECRET_WORD_COMPANY
+                    cut = token.substr(token.indexOf(" ") + 1);
                     break;
                 case REFRESH_COMPANY:
                     word = REFRESH_SECRET_WORD_COMPANY
+                    cut = token.substr(token.indexOf(" ") + 1);
+                    first = token.split(' ')[0]
+                    console.log(first);
                     break;
                 case ACCESS_ADMIN:
                     word = ACCESS_SECRET_WORD_ADMIN
@@ -140,9 +150,15 @@ module.exports = {
                     word = FORGOT_PASSWORD_COMPANY_WORD
                     break;
             }
-            return jwt.verify(token, word);
+            return jwt.verify(cut, word);
         } catch (e) {
-            throw new ApiError(`Token not valid ${token}`, 400)
+            console.log(e);
+            if (e.message === 'jwt expired') {
+                throw new ApiError(`Token not valid. ${e.message}`, 401);
+            } else {
+                throw new ApiError(`Token not valid. ${e.message}`, 406);
+            }
+            // return new ApiError(`Token not valid. ${e.message}`, 401);
         }
     },
 

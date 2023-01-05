@@ -2,6 +2,16 @@ const {brandService} = require("../services");
 const {regexBrandPush, regexBrandSlice, regexBrand} = require("../constants/car.valid");
 const {BRANDS} = require("../constants/regex.enum");
 
+const multer = require("multer");
+const storage = multer.diskStorage({
+    destination: 'Images',
+    filename: (req, file, cb) => {
+        console.log(file);
+        cb(null, file.originalname);
+    }
+})
+const upload = multer({storage: storage}).single('testImage');
+//todo brand logo
 module.exports = {
     getAllBrands: async (req, res, next) => {
         try {

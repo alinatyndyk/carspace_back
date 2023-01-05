@@ -105,23 +105,35 @@ authRouter.get('/orders/all', //for admin
     orderCarController.getAllOrders
 );
 
-authRouter.delete('/orders',
+authRouter.delete('/orders/delete',
     orderCarController.deleteAllOrders
 ); // for admin
 
 authRouter.get('/orders/today', // only for user --done
-    // authMldwr.isAccessTokenValidUser, // token company
+    authMldwr.isAccessTokenValidCompany, // token company
     orderCarController.getAllOrdersToday
 );
 
-authRouter.get('/orders', // only for user --done
+authRouter.get('/orders/user', // only for user --done
     authMldwr.isAccessTokenValidUser,
     orderCarController.getAllUserOrders
 );
 
-authRouter.get('/orders/:order_id', // only for user --done
+authRouter.get('/orders/company', // only for company --done
+    authMldwr.isAccessTokenValidCompany,
+    orderCarController.getAllCompanyOrders
+);
+
+authRouter.get('/user-orders/:order_id', // only for user --done
+    // authMldwr.isAccessTokenValidUser,
     authMldwr.isAccessTokenValidUser,
     orderCarController.getUserOrderById
+);
+
+authRouter.get('/company-orders/:order_id', // only for user --done
+    // authMldwr.isAccessTokenValidUser,
+    authMldwr.isAccessTokenValidCompany,
+    orderCarController.getCompanyOrderById
 );
 
 authRouter.delete('/orders/:order_id', // only for user --done

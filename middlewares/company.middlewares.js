@@ -11,7 +11,7 @@ module.exports = {
             if (!company) {
                 return next(new ApiError('Company is not found', 400));
             }
-            console.log(company);
+            console.log(company, 'company dynamically');
             req.company = company;
 
             next();

@@ -4,9 +4,9 @@ const {sendEmail} = require("../services/email.service");
 const {ORDER_CREATION} = require("../constants/email.action.enum");
 const {BRANDS} = require("../constants/regex.enum");
 const multer = require("multer");
-const {userMldwr, carMldwr} = require("../middlewares");
 const {carValidators} = require("../validators");
 const {Car} = require("../dataBase");
+const {carMldwr} = require("../middlewares");
 const storage = multer.diskStorage({
     destination: 'Images',
     filename: (req, file, cb) => {
@@ -21,6 +21,8 @@ const upload = multer({storage: storage}).single('testImage');
 module.exports = {
     getAllCars: async (req, res, next) => {
         try {
+            // const {access_token, refresh_token} = req.tokenInfo;
+            // console.log(access_token, refresh_token, 'tokens in get all');
             const cars = await carService.getAllCars(req.query);
             res.json(cars);
         } catch (e) {
@@ -33,6 +35,20 @@ module.exports = {
             const {car_id} = req.params;
             const car = await carService.getCarById(car_id);
             res.json(car);
+        } catch (e) {
+            next(e);
+        }
+    },
+
+    searchCarByDescription: async (req, res, next) => {
+        try {
+            const {search} = req.body;
+            console.log(req.body);
+            const data = await carService.searchCarByDescription(search);
+            if(data.length === 0){
+                return next(new ApiError('No cars found. Try later...', 400))
+            }
+            res.json(data);
         } catch (e) {
             next(e);
         }
@@ -63,49 +79,50 @@ module.exports = {
     },
 
     createCarImg: async (req, res, next) => {
-            upload(req, res, async (err) => {
-                console.log(req.body, 'req body in upload');
-                console.log(req.file, 'req file');
-                const {brand} = req.body;
-                console.log(brand, 'brand in upload');
-                console.log(BRANDS.includes(brand));
+        upload(req, res, async (err) => {
+            console.log(req.body, 'req body in upload');
+            console.log(req.file, 'req file');
+            const {brand} = req.body;
+            console.log(brand, 'brand in upload');
+            console.log(BRANDS.includes(brand));
+            const {_id} = req.tokenInfo.company;
+            console.log(_id, 'token company id');
 
-                if (BRANDS.includes(brand) === false) {
-                    console.log('not includes');
-                    return next(new ApiError('Not includes this brand', 400));
-                }
-                const brand_db = brand.replace(/\s/g, '_');
-                console.log(brand_db, 'brand_db');
-                const validate = carValidators.newCarValidator.validate(req.body);
+            if (BRANDS.includes(brand) === false) {
+                console.log('not includes');
+                return next(new ApiError('Not includes this brand', 400));
+            }
+            const brand_db = brand.replace(/\s/g, '_');
+            console.log(brand_db, 'brand_db');
+            const validate = carValidators.newCarValidator.validate(req.body);
 
-                if (validate.error) {
-                    console.log(validate.error.message, 'validate car error');
-                    return next(new ApiError(validate.error.message, 400))
-                }
+            if (validate.error) {
+                console.log(validate.error.message, 'validate car error');
+                return next(new ApiError(validate.error.message, 400))
+            }
 
-                if (!req.file) {
-                    return next(new ApiError('Upload at least one picture', 400))
-                } else {
-                    console.log(req.body, 'req body in else');
-                    const newCar = new Car({
-                        ...req.body, brand_db,
-                        image: {
-                            data: req.file.filename,
-                            link: `http://localhost:5000/photos/${req.file.filename}`
-                        }
-                    })
-                    newCar.save()
-                        .then(() => res.send(newCar))
-                        .catch(err => console.log(err))
+            if (!req.file) {
+                return next(new ApiError('Upload at least one picture', 400))
+            } else {
+                console.log(req.body, 'req body in else');
+                const newCar = new Car({
+                    ...req.body, brand_db, company: _id,
+                    image: {
+                        data: req.file.filename,
+                        link: `http://localhost:5000/photos/${req.file.filename}`
+                    }
+                })
+                newCar.save()
+                    .then(() => res.send(newCar))
+                    .catch(err => console.log(err))
 
-                    const {_id} = req.tokenInfo.company;
-                    const companyCars = await carService.getCarsByParams({company: _id});
-                    const brandCars = await carService.getCarsByParams({brand});
-                    await companyService.updateCompany(_id, {cars: [...companyCars]});
-                    await brandService.updateBrand({brand}, {cars: [...brandCars]});
+                const companyCars = await carService.getCarsByParams({company: _id});
+                const brandCars = await carService.getCarsByParams({brand});
+                await companyService.updateCompany(_id, {cars: [...companyCars]});
+                await brandService.updateBrand({brand}, {cars: [...brandCars]});
 
-                }
-            })
+            }
+        })
     },
 
     updateCar: async (req, res, next) => {
@@ -153,7 +170,7 @@ module.exports = {
             const {from_date, to_date} = req.body;
             console.log(from_date, to_date, 'time period-----------------------1st');
 
-            const {min_drivers_age, min_rent_time, price_day_basis} = await carService.getCarById(car_id);
+            const {min_drivers_age, min_rent_time, price_day_basis, company} = await carService.getCarById(car_id);
             console.log(price_day_basis, 'price*************************');
 
 
@@ -198,6 +215,7 @@ module.exports = {
 
             const order = await orderCarService.createCarOrder({
                 user: _id,
+                company,
                 car: car_id,
                 car_token: carToken,
                 from_date: fromDate,

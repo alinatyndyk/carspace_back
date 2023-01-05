@@ -25,4 +25,13 @@ module.exports = {
     deleteCar(_id) {
         return Car.findByIdAndDelete(_id)
     },
+
+    deleteCars(filter = {}) {
+        return Car.deleteMany(filter)
+    },
+
+    searchCarByDescription(key = {}) {
+        // return Car.find(key)
+        return Car.find({description: {$regex: key},})
+    }
 }

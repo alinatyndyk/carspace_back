@@ -2,6 +2,7 @@ const {Router} = require('express');
 
 const {companyController} = require("../controllers");
 const {companyMldwr, commonMldwr, authMldwr} = require("../middlewares");
+const {companyService} = require("../services");
 
 const companyRouter = Router();
 
@@ -15,9 +16,9 @@ companyRouter.get('/:company_id',
 
 companyRouter.post('/',
     //access admin
-    companyMldwr.companyBodyValid('newCompanyValidator'),
-    companyMldwr.uniqueCompanyNumber,
-    companyController.createCompany); //only admin
+    // companyMldwr.companyBodyValid('newCompanyValidator'),
+    // companyMldwr.uniqueCompanyNumber,
+    companyController.createCompanyImg); //only admin
 
 companyRouter.patch('/:company_id',
     commonMldwr.validIdMldwr('company_id', 'params'),
@@ -29,5 +30,10 @@ companyRouter.delete('/:company_id',
     commonMldwr.validIdMldwr('company_id', 'params'),
     //access admin
     companyController.deleteCompany); //only admin
+
+companyRouter.delete('/', async (req, res) => {
+    await companyService.deleteCompanies();
+    res.send('Companies are empty')
+});
 
 module.exports = companyRouter;

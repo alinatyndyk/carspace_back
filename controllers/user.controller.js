@@ -47,11 +47,6 @@ module.exports = {
     // },
 
     createUserImg: (req, res) => {
-        // const {email, name, password} = req.body;
-        // console.log('crate user', email, name, password);
-        // const hashPassword = await tokenService.hashPassword(req.body.password);
-        // await sendEmail(email, CREATE_USER, {userName: name});
-        // console.log(name);
         upload(req, res, (err) => {
             console.log(req.body, 'in upload');
             console.log(req.file);

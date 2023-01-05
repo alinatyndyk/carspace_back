@@ -13,17 +13,19 @@ module.exports = {
     isAccessTokenValidCompany: async (req, res, next) => {
         try {
             const access_token = req.get(ACCESS_TOKEN);
+            console.log(access_token, 'mldwr access');
             if (!access_token) {
-                return next(new ApiError('You are unauthorized. No access token for company', 401))
+                console.log('null');
+                return next(new ApiError('You are unauthorized. No access token for company', 403)) //todo change codes
             }
             tokenService.checkToken(access_token, ACCESS_COMPANY);
 
             const tokenInfo = await authService.getOneWithCompany({access_token});
 
-            console.log(tokenInfo, '----------------------------------------token info');
+            console.log(tokenInfo, '----------------------------------------token info company');
 
             if (!tokenInfo) {
-                return next(new ApiError('No valid token for company', 401))
+                return next(new ApiError('No valid token for company. Forbidden', 401))
             }
             req.tokenInfo = tokenInfo;
 
@@ -45,7 +47,7 @@ module.exports = {
             const tokenInfo = await authService.getOneWithCompany({refresh_token});
 
             if (!tokenInfo) {
-                return next(new ApiError('No valid refresh token for company', 401));
+                return next(new ApiError('No valid refresh token for company. Forbidden', 401));
             }
 
             req.tokenInfo = tokenInfo;
@@ -61,6 +63,7 @@ module.exports = {
         try {
             const access_token = req.get(ACCESS_TOKEN);
             if (!access_token) {
+                console.log('no token');
                 return next(new ApiError('You are unauthorized. No access token for user', 401))
             }
             tokenService.checkToken(access_token, ACCESS_USER);
@@ -78,6 +81,28 @@ module.exports = {
             next(e)
         }
     },
+
+    // accessDecodeValidation: async (req, res, next) => {
+    //     try {
+    //         const access_token = req.get(ACCESS_TOKEN);
+    //
+    //         if (!access_token) {
+    //             return next(new ApiError('You are unauthorized. No access token', 401))
+    //         }
+    //         tokenService.checkToken(access_token, ACCESS_USER);
+    //         const tokenInfo = await authService.getOneWithUser({access_token});
+    //
+    //         if (!tokenInfo) {
+    //             return next(new ApiError('No valid token for user', 401))
+    //         }
+    //
+    //         req.tokenInfo = tokenInfo;
+    //         console.log(req.tokenInfo, 'token info');
+    //         next();
+    //     } catch (e) {
+    //         next(e)
+    //     }
+    // },
 
     isRefreshTokenValidUser: async (req, res, next) => {
         try {
