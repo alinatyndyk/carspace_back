@@ -26,6 +26,6 @@ module.exports = {
     },
 
     getCarOrderById(_id){
-        return OrderCar.findById(_id);
+        return OrderCar.findById(_id).populate('user');
     }
 }

@@ -125,13 +125,13 @@ authRouter.get('/orders/company', // only for company --done
 );
 
 authRouter.get('/user-orders/:order_id', // only for user --done
-    // authMldwr.isAccessTokenValidUser,
+    commonMldwr.validIdMldwr('order_id'),
     authMldwr.isAccessTokenValidUser,
     orderCarController.getUserOrderById
 );
 
 authRouter.get('/company-orders/:order_id', // only for user --done
-    // authMldwr.isAccessTokenValidUser,
+    commonMldwr.validIdMldwr('order_id'),
     authMldwr.isAccessTokenValidCompany,
     orderCarController.getCompanyOrderById
 );
