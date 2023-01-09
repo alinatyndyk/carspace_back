@@ -9,6 +9,10 @@ module.exports = {
         return OrderCar.find(filter).populate('user');
     },
 
+    getCarOrdersByParamsWithCar(filter){
+        return OrderCar.find(filter).populate('car');
+    },
+
     deleteCarOrderById(_id){
         return OrderCar.findByIdAndDelete(_id);
     },

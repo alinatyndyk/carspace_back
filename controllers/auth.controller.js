@@ -21,9 +21,10 @@ module.exports = {
 
             await tokenService.comparePasswords(password, hashPassword);
 
-            const authTokens = tokenService.createAuthTokensCompany({_id});
+            const authTokens = tokenService.createAuthTokensCompany({_id: _id._id});
+            console.log(_id, _id._id);
 
-            await authService.saveTokensCompany({...authTokens, company: _id});
+            await authService.saveTokensCompany({...authTokens, company: _id._id});
 
             res.json(authTokens);
         } catch (e) {
@@ -64,6 +65,7 @@ module.exports = {
             console.log(req.body, 'in login user');
             const {password} = req.body;
             const {password: hashPassword, _id} = req.user;
+            console.log(req.user, 'user login req user');
 
             await tokenService.comparePasswords(password, hashPassword);
 

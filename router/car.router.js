@@ -8,7 +8,7 @@ const {orderCarController} = require("../controllers");
 const carRouter = Router();
 
 carRouter.get('/',
-    authMldwr.isAccessTokenValidCompany,
+    // authMldwr.isAccessTokenValidCompany,
     carController.getAllCars); // everyone
 
 carRouter.get('/:car_id', carController.getCarById); //everyone

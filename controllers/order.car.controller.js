@@ -25,7 +25,7 @@ module.exports = {
     getAllUserOrders: async (req, res, next) => {
         try {
             const {_id} = req.tokenInfo.user;
-            const orders = await orderCarService.getCarOrdersByParams({user: _id});
+            const orders = await orderCarService.getCarOrdersByParamsWithCar({user: _id});
             res.json(orders);
         } catch (e) {
             next(e);

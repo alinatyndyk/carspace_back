@@ -6,6 +6,7 @@ module.exports = {
     carBodyValid: (validatorType) => async (req, res, next) => {
         try {
             console.log(validatorType);
+            console.log(req.body);
             const validate = carValidators[validatorType].validate(req.body);
 
             if (validate.error) {
