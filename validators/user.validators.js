@@ -24,9 +24,10 @@ const newUserValidator = Joi.object({
 
 const updateUserValidator = Joi.object({
     name: nameValidator,
+    last_name: nameValidator,
     age: ageValidator,
     email: emailValidator,
-    password: passValidator,
+    contact_number: numberValidator
 
 })
 
