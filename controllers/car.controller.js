@@ -7,6 +7,7 @@ const multer = require("multer");
 const {carValidators} = require("../validators");
 const {Car} = require("../dataBase");
 const {carMldwr} = require("../middlewares");
+const {object} = require("joi");
 const storage = multer.diskStorage({
     destination: 'Images',
     filename: (req, file, cb) => {
@@ -21,12 +22,21 @@ const upload = multer({storage: storage}).single('testImage');
 module.exports = {
     getAllCars: async (req, res, next) => {
         try {
-            // const {access_token, refresh_token} = req.tokenInfo;
-            // console.log(access_token, refresh_token, 'tokens in get all');
-            const cars = await carService.getAllCars(req.query);
-            console.log(req.query, 'QUERY');
-            // console.log(req.params, "PARAMS");
-            res.json(cars);
+            const insidesBody = ['no_of_seats', 'vehicle_type', 'transmission', 'min_drivers_age', 'location', 'brand']
+            const all = {};
+            for (const [key, value] of Object.entries(req.query)) {
+                console.log(key, value, 'ITER');
+                if (insidesBody.includes(key)) {
+                    all[key] = value;
+                } else {
+                    console.log(`car_features.${key}`, value);
+                    all[`car_features.${key}`] = value;
+                }
+            }
+            const carsByInsides = await carService.getAllCars(all);
+            console.log(all);
+
+            res.json(carsByInsides);
         } catch (e) {
             next(e);
         }
@@ -47,7 +57,7 @@ module.exports = {
             const {search} = req.body;
             console.log(req.body);
             const data = await carService.searchCarByDescription(search);
-            if(data.length === 0){
+            if (data.length === 0) {
                 return next(new ApiError('No cars found. Try later...', 400))
             }
             res.json(data);

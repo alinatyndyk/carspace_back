@@ -2,9 +2,18 @@ const {Car} = require('../dataBase')
 
 module.exports = {
 
+    // getAllCars(filter = {}) {
+    //     return Car.find(filter)
+    // },
+
     getAllCars(filter = {}) {
         return Car.find(filter)
     },
+
+
+    // db.collection.find({
+    //     "contractInfo.userid": "yourid"
+    // })
 
     getCarById(_id) {
         return Car.findById(_id)
