@@ -35,7 +35,7 @@ carRouter.post('/:car_id/order',  // only a company with a token --done
     carMldwr.isCarTaken(),
     carController.orderCar);
 
-carRouter.get('/filter/date',  // only a company with a token --done
+carRouter.post('/filter/date',  // only a company with a token --done
     // commonMldwr.validIdMldwr('car_id', 'params'),
     // authMldwr.isAccessTokenValidUser,
     // carMldwr.isCarTaken(),

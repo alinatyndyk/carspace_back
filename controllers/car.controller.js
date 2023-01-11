@@ -24,6 +24,8 @@ module.exports = {
             // const {access_token, refresh_token} = req.tokenInfo;
             // console.log(access_token, refresh_token, 'tokens in get all');
             const cars = await carService.getAllCars(req.query);
+            console.log(req.query, 'QUERY');
+            // console.log(req.params, "PARAMS");
             res.json(cars);
         } catch (e) {
             next(e);
