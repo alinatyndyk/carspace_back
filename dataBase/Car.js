@@ -25,7 +25,7 @@ const carSchema = new Schema({
     security_deposit: {type: Number, required: true},
     add_milage_charge: {type: Number, required: true},
     //--------------------------------
-    // car_features: {
+    car_features: {
         digital_hud: {type: Boolean, default: false},
         cruise_control: {type: Boolean, default: false},
         adaptive_cruise_control: {type: Boolean, default: false},
@@ -46,7 +46,7 @@ const carSchema = new Schema({
         bluetooth: {type: Boolean, default: false},
         usb: {type: Boolean, default: false},
         chiller_freezer: {type: Boolean, default: false},
-    // },
+    },
     // status: {type: String}, todo if recieved ask sergey
     company: {
         type: Schema.Types.ObjectId,
