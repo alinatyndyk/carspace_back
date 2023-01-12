@@ -4,7 +4,7 @@ const {regexBrand} = require("../constants/car.valid");
 
 const brandValidator = Joi.string().min(2).max(30).valid().trim(); //todo
 const modelValidator = Joi.string().min(2).max(30).trim();
-const yearValidator = Joi.number();
+const yearValidator = Joi.number().min(1960).max(new Date().getFullYear());
 const descriptionValidator = Joi.string().min(10).trim();
 const minAgeValidator = Joi.number().min(18).max(85)
 const priceValidator = Joi.number();

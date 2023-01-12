@@ -7,6 +7,7 @@ module.exports = {
     // },
 
     getAllCars(filter = {}) {
+        console.log(filter, 'filter service');
         return Car.find(filter)
     },
 

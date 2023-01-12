@@ -22,19 +22,28 @@ const upload = multer({storage: storage}).single('testImage');
 module.exports = {
     getAllCars: async (req, res, next) => {
         try {
-            const insidesBody = ['no_of_seats', 'vehicle_type', 'transmission', 'min_drivers_age', 'location', 'brand']
+            const insidesBody = ['vehicle_type', 'transmission', 'location', 'brand']
+            // const insidesGreater = ['no_of_seats', 'min_drivers_age']
             const all = {};
             for (const [key, value] of Object.entries(req.query)) {
                 console.log(key, value, 'ITER');
                 if (insidesBody.includes(key)) {
                     all[key] = value;
+                } else if (key === 'no_of_seats') {
+                    all[key] = {$gte: value};
+                }else if (key === 'min_drivers_age' || 'price_day_basis') {
+                    all[key] = {$lte: value};
                 } else {
                     console.log(`car_features.${key}`, value);
                     all[`car_features.${key}`] = value;
                 }
             }
+            // const carsByInsides = await carService.getAllCars(all);
             const carsByInsides = await carService.getAllCars(all);
             console.log(all);
+            if (!carsByInsides) {
+                return next(new ApiError('No cars with given parameters', 404))
+            }
 
             res.json(carsByInsides);
         } catch (e) {
