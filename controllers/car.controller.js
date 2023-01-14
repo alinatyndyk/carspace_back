@@ -68,13 +68,20 @@ module.exports = {
 
     searchCarByDescription: async (req, res, next) => {
         try {
-            const {search} = req.body;
+            const {description} = req.body;
+
+            let {page} = req.query;
+            console.log(page, 'page');
+            if (!page) page = 1
+            const skip = (page -1) * 2;
+            console.log(skip, 'skip');
+
             console.log(req.body);
-            const data = await carService.searchCarByDescription(search);
+            const data = await carService.searchCarByDescription(description).skip(skip).limit(2);
             if (data.length === 0) {
                 return next(new ApiError('No cars found. Try later...', 400))
             }
-            res.json(data);
+            res.json({page, cars: data});
         } catch (e) {
             next(e);
         }
