@@ -1,6 +1,7 @@
 module.exports = {
     PORT: process.env.PORT || 5000,
     MONGO_URL: process.env.MONGO_URL || 'mongodb://localhost:27017/test',
+    STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
 
     ACCESS_SECRET_WORD: process.env.ACCESS_SECRET_WORD,
     REFRESH_SECRET_WORD: process.env.REFRESH_SECRET_WORD,

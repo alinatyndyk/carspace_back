@@ -1,5 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const bodyParser = require('body-parser');
 const cors = require('cors');
 const corsOptions = {
     origin: 'http://localhost:3000',
@@ -9,7 +10,7 @@ const corsOptions = {
 require('dotenv').config()
 
 const carRouter = require('./router/car.router')
-const {PORT, MONGO_URL} = require("./configs/configs");
+const {PORT, MONGO_URL, STRIPE_SECRET_KEY} = require("./configs/configs");
 const {userRouter, companyRouter, authRouter, paymentRouter, brandRouter} = require("./router");
 const {mainErrorHandler} = require("./errors")
 const runCronJobs = require('./cron/cron');
@@ -17,6 +18,7 @@ const {regexBrand} = require("./constants/car.valid");
 
 const app = express();
 app.use(express.json());
+app.use(express.urlencoded({extend: true}));
 app.use(express.static("public"));
 
 mongoose.set('strictQuery', false);
@@ -32,38 +34,52 @@ app.use('/users', userRouter)
 app.use('/companies', companyRouter)
 app.use('/brands', brandRouter)
 app.use('/auth', authRouter)
-app.use('/payment', paymentRouter)
+// app.use('/payment', paymentRouter)
 
-// const path = require('path');
-// const {Image_model} = require("./dataBase");
-// const storage = multer.diskStorage({
-//     destination: 'Images',
-//     filename: (req, file, cb) => {
-//         console.log(file);
-//         cb(null, file.originalname);
-//     }
-// })
-// const upload = multer({storage: storage}).single('testImage');
+const Stripe = require('stripe')(STRIPE_SECRET_KEY);
+app.post('/payment', async(req, res) => {
+    let status, error;
+    const {from_date, to_date, carId, token, amount} = req.body;
+    console.log(token, 'stripe token');
+    console.log(from_date, to_date, carId, 'stripe dates');
+    try{
+        await Stripe.charges.create({
+            source: token.id,
+            amount,
+            currency: 'usd'
+        })
+        status = 'successful'
+    }catch (e) {
+        console.log(e, 'error');
+        status = 'failure'
+    }
+    res.json({error, status})
+})
 
-// app.post('/upload', (req, res) => {
-//     upload(req, res, (err) => {
-//         console.log(req.body, 'req body img');
-//         console.log(req.file, 'req file');
-//         if (err) {
-//             console.log(err);
-//         } else {
-//             const newImage = new Image_model({
-//                 name: req.body.name,
-//                 image: {
-//                     data: req.file.filename
-//                 }
-//             })
-//             newImage.save()
-//                 .then(() => res.send('successfully uploaded'))
-//                 .catch(err => console.log(err))
-//         }
-//     })
+// app.post('/create-checkout-session', async (req, res) => {
+//     console.log('SESSION')
+//     const session = await Stripe.checkout.sessions.create({
+//         line_items: [
+//             {
+//                 price_data: {
+//                     currency: 'usd',
+//                     product_data: {
+//                         name: 'T-shirt',
+//                     },
+//                     unit_amount: 2000,
+//                 },
+//                 quantity: 1,
+//             },
+//         ],
+//         mode: 'payment',
+//         success_url: 'http://localhost:3000/checkout-success',
+//         cancel_url: 'http://localhost:3000/chackout-cancel',
+//     });
+//
+//     res.redirect({url: session.url});
+//     // res.json('success');
 // });
+
 
 app.use('/photos', express.static('Images'))
 const multer = require('multer');

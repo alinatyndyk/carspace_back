@@ -8,6 +8,7 @@ const {carValidators} = require("../validators");
 const {Car} = require("../dataBase");
 const {carMldwr} = require("../middlewares");
 const {object} = require("joi");
+const {STRIPE_SECRET_KEY} = require("../configs/configs");
 const storage = multer.diskStorage({
     destination: 'Images',
     filename: (req, file, cb) => {
@@ -16,6 +17,8 @@ const storage = multer.diskStorage({
     }
 })
 const upload = multer({storage: storage}).single('testImage');
+
+const Stripe = require('stripe')(STRIPE_SECRET_KEY);
 
 // const stripe = require('stripe')('sk_test_51MIX9gIAfGNWX8Hhl3mH4IFJladHRo1ErYUQv2ZEIWdfJIwKXvk5zHwOGUrntdnmJz7af89NUZFm94dVRYV00fRl00gqg3UAPA');
 
@@ -228,18 +231,22 @@ module.exports = {
 
 //-------------------------------------------------------------------------------------------------------
 
-            // Create a PaymentIntent with the order amount and currency
-            // const paymentIntent = await stripe.paymentIntents.create({
-            //     amount: price_day_basis,
-            //     currency: "usd",
-            //     automatic_payment_methods: {
-            //         enabled: true,
-            //     },
-            // });
-            //
-            // res.send({
-            //     clientSecret: paymentIntent.client_secret,
-            // });
+            let status, error;
+            //from date to date got higher
+            const {carId, token, amount} = req.body;
+            console.log(token, 'stripe token');
+            console.log(from_date, to_date, carId, 'stripe dates');
+            try{
+                await Stripe.charges.create({
+                    source: token.id,
+                    amount,
+                    currency: 'usd'
+                })
+                status = 'successful'
+            }catch (e) {
+                console.log(e, 'error');
+                status = 'failure'
+            }
 
             //---------------------------------------------------------------------
 
