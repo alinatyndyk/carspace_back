@@ -107,15 +107,6 @@ module.exports = {
     },
 
     filterCarsByDates: async (req, res, next) => {
-
-        // we have from-date to-date and [array of cars]
-
-        //  array of cars = carsService.getByParamsMany(filter by description)
-        // arrayOfCars.forEach(car => {
-        // orders = orderservice.gteordersbyparams(car._id);
-
-        // })
-
         try {
             let availableCars = [];
             const {from_date, to_date} = req.body;

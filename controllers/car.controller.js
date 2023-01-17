@@ -73,6 +73,9 @@ module.exports = {
         try {
             const {description} = req.body;
 
+            let {params} = req.query;
+            let {params: par} = req.params;
+            console.log(params, 'params', par);
             let {page} = req.query;
             console.log(page, 'page');
             if (!page) page = 1
@@ -80,7 +83,7 @@ module.exports = {
             console.log(skip, 'skip');
 
             console.log(req.body);
-            const data = await carService.searchCarByDescription(description).skip(skip).limit(2);
+            const data = await carService.searchCarByDescription(description.toLowerCase()).skip(skip).limit(2);
             if (data.length === 0) {
                 return next(new ApiError('No cars found. Try later...', 400))
             }

@@ -13,6 +13,7 @@ const locationValidator = Joi.string().valid('London', 'Birmingham', 'Manchester
 const imageValidator = Joi.any()
 const booleanValidator = Joi.boolean();
 const stringValidator = Joi.string();
+const numberValidator = Joi.number();
 
 const newCarValidator = Joi.object({
     brand: brandValidator.required(),
@@ -26,8 +27,8 @@ const newCarValidator = Joi.object({
     transmission: stringValidator.required(),
     engine_capacity: stringValidator.required(),
     vehicle_type: stringValidator.required(),
-    no_of_seats: yearValidator.required(),
-    fits_bags: yearValidator.required(),
+    no_of_seats: numberValidator.required(),
+    fits_bags: numberValidator.required(),
     price_day_basis: priceValidator.required(),
     testImage: imageValidator,
     security_deposit: rentValidator.required(),

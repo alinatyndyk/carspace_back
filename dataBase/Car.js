@@ -5,7 +5,7 @@ const carSchema = new Schema({
     brand_db: {type: String, trim: true, lowercase: true},
     model: {type: String, required: true},
     model_year: {type: Number, required: true},
-    description: {type: String, trim: true, default: 'No description', required: true},
+    description: {type: String, trim: true, default: 'No description', lowercase: true, required: true},
     image: {
         data: String,
         link: String

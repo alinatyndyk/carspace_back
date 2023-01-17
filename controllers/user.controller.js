@@ -13,6 +13,7 @@ const storage = multer.diskStorage({
     }
 })
 const upload = multer({storage: storage}).single('testImage');
+// const upload = multer({storage: storage}).array('testImage', 5);
 
 module.exports = {
     getAllUsers: async (req, res, next) => {

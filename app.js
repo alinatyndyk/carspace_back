@@ -37,49 +37,24 @@ app.use('/auth', authRouter)
 // app.use('/payment', paymentRouter)
 
 const Stripe = require('stripe')(STRIPE_SECRET_KEY);
-app.post('/payment', async(req, res) => {
+app.post('/payment', async (req, res) => {
     let status, error;
     const {from_date, to_date, carId, token, amount} = req.body;
     console.log(token, 'stripe token');
     console.log(from_date, to_date, carId, 'stripe dates');
-    try{
+    try {
         await Stripe.charges.create({
             source: token.id,
             amount,
             currency: 'usd'
         })
         status = 'successful'
-    }catch (e) {
+    } catch (e) {
         console.log(e, 'error');
         status = 'failure'
     }
     res.json({error, status})
 })
-
-// app.post('/create-checkout-session', async (req, res) => {
-//     console.log('SESSION')
-//     const session = await Stripe.checkout.sessions.create({
-//         line_items: [
-//             {
-//                 price_data: {
-//                     currency: 'usd',
-//                     product_data: {
-//                         name: 'T-shirt',
-//                     },
-//                     unit_amount: 2000,
-//                 },
-//                 quantity: 1,
-//             },
-//         ],
-//         mode: 'payment',
-//         success_url: 'http://localhost:3000/checkout-success',
-//         cancel_url: 'http://localhost:3000/chackout-cancel',
-//     });
-//
-//     res.redirect({url: session.url});
-//     // res.json('success');
-// });
-
 
 app.use('/photos', express.static('Images'))
 const multer = require('multer');
