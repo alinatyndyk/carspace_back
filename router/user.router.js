@@ -1,7 +1,7 @@
 const {Router} = require('express');
 const {userController} = require("../controllers");
 const {userMldwr, commonMldwr, authMldwr} = require("../middlewares");
-const {Image_model, User} = require("../dataBase");
+const {Image_model, User, Album} = require("../dataBase");
 
 
 const userRouter = Router();
@@ -29,12 +29,12 @@ userRouter.get('/:user_id',
 // await sendEmail(email, CREATE_USER, {userName: name});
 // console.log(name);
 //---------------------------------------------------------------------------------
-const multer = require('multer');
 const {userValidators} = require("../validators");
 const {ApiError} = require("../errors");
 const {tokenService, userService} = require("../services");
 const {sendEmail} = require("../services/email.service");
 const {CREATE_USER} = require("../constants/email.action.enum");
+const multer = require('multer');
 const storage = multer.diskStorage({
     destination: 'Images',
     filename: (req, file, cb) => {
@@ -42,10 +42,11 @@ const storage = multer.diskStorage({
         cb(null, file.originalname);
     }
 })
-const upload = multer({storage: storage}).single('testImage');
+// const upload = multer({storage: storage}).single('testImage');
+const upload = multer({storage: storage}).any('files');
 
 
-userRouter.post('/',(req, res, next) => {
+userRouter.post('/', (req, res, next) => {
     upload(req, res, async (err) => {
 
         const validate = userValidators.newUserValidator.validate(req.body);
@@ -61,7 +62,7 @@ userRouter.post('/',(req, res, next) => {
         const hashPassword = await tokenService.hashPassword(req.body.password);
         await sendEmail(email, CREATE_USER, {userName: name});
         if (!req.file) {
-            return next( new ApiError('Upload at least one picture', 400))
+            return next(new ApiError('Upload at least one picture', 400))
         } else {
             const newImage = new User({
                 ...req.body, password: hashPassword,
@@ -73,6 +74,41 @@ userRouter.post('/',(req, res, next) => {
             newImage.save()
                 .then(() => res.send('successfully uploaded'))
                 .catch(err => console.log(err))
+        }
+    })
+})
+
+userRouter.get('/get/album', async (req, res) => {
+    const result = await Album.find();
+    res.json(result);
+})
+userRouter.post('/album', (req, res, next) => {
+    console.log(req.body, 'req body');
+    upload(req, res, (err) => {
+        console.log('**************************');
+    console.log(req.files, 'req files');
+    console.log(req.body, 'req files');
+        if(!req.files) {
+            console.log(err);
+             throw new ApiError('Upload at least one picture', 400)
+        } else {
+            let arrAlbum = [];
+            req.files.forEach(file => {
+                console.log(file, 'iter');
+                    const image = {
+                        data: file.filename,
+                        link: `http://localhost:5000/photos/${file.filename}`
+                    }
+                arrAlbum.push(image);
+                console.log(arrAlbum, 'arr album');
+            })
+            const NewAlbum = new Album({
+                images: arrAlbum
+            })
+            NewAlbum.save()
+                .then(() => res.send(NewAlbum))
+                .catch(err => console.log(err))
+            console.log(NewAlbum, 'NEW ALBUM MODEL !!!!!!!!!!!!!!!!!');
         }
     })
 })
@@ -90,7 +126,7 @@ userRouter.delete('/:user_id',
     userMldwr.isUserPresent(),
     authMldwr.isAccessTokenValidUser,
     userController.deleteUser); //only with a users token --done
- //-------------------------------------------------------------
+//-------------------------------------------------------------
 userRouter.delete('/', async (req, res) => {
     await userService.deleteUsers();
     res.send('Users are empty');

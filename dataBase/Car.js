@@ -6,7 +6,12 @@ const carSchema = new Schema({
     model: {type: String, required: true},
     model_year: {type: Number, required: true},
     description: {type: String, trim: true, default: 'No description', lowercase: true, required: true},
-    image: {
+    // image: {
+    //     data: String,
+    //     link: String
+    // },
+    images: {
+        type: [Schema.Types.Mixed],
         data: String,
         link: String
     },

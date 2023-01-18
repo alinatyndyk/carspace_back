@@ -9,6 +9,16 @@ const corsOptions = {
 }
 require('dotenv').config()
 
+const multer = require('multer');
+const storage = multer.diskStorage({
+    destination: 'Images',
+    filename: (req, file, cb) => {
+        console.log(file);
+        cb(null, file.originalname);
+    }
+})
+const upload = multer({storage: storage}).array('testImage', 4);
+
 const carRouter = require('./router/car.router')
 const {PORT, MONGO_URL, STRIPE_SECRET_KEY} = require("./configs/configs");
 const {userRouter, companyRouter, authRouter, paymentRouter, brandRouter} = require("./router");
@@ -57,7 +67,6 @@ app.post('/payment', async (req, res) => {
 })
 
 app.use('/photos', express.static('Images'))
-const multer = require('multer');
 app.get('/upload/:path', (req, res) => {
     console.log(req.params);
     // res.download('Images/'+req.params.path)

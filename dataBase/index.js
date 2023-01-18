@@ -1,4 +1,5 @@
 module.exports = {
+    Album: require('./Album'),
     User: require('./User'),
     Car: require('./Car'),
     Company: require('./Company'),

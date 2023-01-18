@@ -12,8 +12,8 @@ const storage = multer.diskStorage({
         cb(null, file.originalname);
     }
 })
-const upload = multer({storage: storage}).single('testImage');
-// const upload = multer({storage: storage}).array('testImage', 5);
+// const upload = multer({storage: storage}).single('testImage');
+const upload = multer({storage: storage}).array('testImage', 5);
 
 module.exports = {
     getAllUsers: async (req, res, next) => {
@@ -67,6 +67,30 @@ module.exports = {
                     .then(() => res.send('successfully uploaded'))
                     .catch(err => new Error('Something is wrong'))
             }
+        })
+    },
+
+    createMultipleAlbum: (req, res) => {
+        upload(req, res, (err) => {
+            console.log(req.body, 'in upload');
+            // console.log(req.file, 'file');
+            console.log(req.files, 'files');
+            // if (err) {
+            //     console.log(err);
+            // } else {
+            //     console.log('in else', req.body);
+            //     console.log(req.file, 'req.file');
+            //     const newImage = new User({
+            //         ...req.body,
+            //         image: {
+            //             data: req.file,
+            //             contentType: 'image/png'
+            //         }
+            //     })
+            //     newImage.save()
+            //         .then(() => res.send('successfully uploaded'))
+            //         .catch(err => new Error('Something is wrong'))
+            // }
         })
     },
 

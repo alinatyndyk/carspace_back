@@ -16,7 +16,7 @@ const storage = multer.diskStorage({
         cb(null, file.originalname);
     }
 })
-const upload = multer({storage: storage}).single('testImage');
+const upload = multer({storage: storage}).any('files');
 
 const Stripe = require('stripe')(STRIPE_SECRET_KEY);
 
@@ -28,7 +28,7 @@ module.exports = {
             const insidesBody = ['vehicle_type', 'transmission', 'location', 'brand'] //TODO WRITE ALL PROPS
             let {page} = req.query;
             if (!page) page = 1
-            const skip = (page -1) * 2;
+            const skip = (page - 1) * 2;
             console.log(skip, 'skip');
             const all = {};
             for (const [key, value] of Object.entries(req.query)) {
@@ -79,7 +79,7 @@ module.exports = {
             let {page} = req.query;
             console.log(page, 'page');
             if (!page) page = 1
-            const skip = (page -1) * 2;
+            const skip = (page - 1) * 2;
             console.log(skip, 'skip');
 
             console.log(req.body);
@@ -120,7 +120,7 @@ module.exports = {
     createCarImg: async (req, res, next) => {
         upload(req, res, async (err) => {
             console.log(req.body, 'req body in upload');
-            console.log(req.file, 'req file');
+            console.log(req.files, 'req files');
             const {brand} = req.body;
             console.log(brand, 'brand in upload');
             console.log(BRANDS.includes(brand));
@@ -140,21 +140,31 @@ module.exports = {
                 return next(new ApiError(validate.error.message, 400))
             }
 
-            if (!req.file) {
+            if (!req.files) {
                 return next(new ApiError('Upload at least one picture', 400))
             } else {
                 console.log(req.body, 'req body in else');
+
+                let arrAlbum = [];
+                req.files.forEach(file => {
+                    console.log(file, 'iter');
+                    const image = {
+                        data: file.filename,
+                        link: `http://localhost:5000/photos/${file.filename}`
+                    }
+                    arrAlbum.push(image);
+                    console.log(arrAlbum, 'arr album');
+                })
+
                 const newCar = new Car({
                     ...req.body, brand_db, company: _id,
-                    image: {
-                        data: req.file.filename,
-                        link: `http://localhost:5000/photos/${req.file.filename}`
-                    }
+                    images: arrAlbum
                 })
                 newCar.save()
                     .then(() => res.send(newCar))
                     .catch(err => console.log(err))
 
+                console.log(newCar, 'NEW CAR MODEL !!!!!!!!!!!!!!!!!');
                 const companyCars = await carService.getCarsByParams({company: _id});
                 const brandCars = await carService.getCarsByParams({brand});
                 await companyService.updateCompany(_id, {cars: [...companyCars]});
@@ -239,14 +249,14 @@ module.exports = {
             const {carId, token, amount} = req.body;
             console.log(token, 'stripe token');
             console.log(from_date, to_date, carId, 'stripe dates');
-            try{
+            try {
                 await Stripe.charges.create({
                     source: token.id,
                     amount,
                     currency: 'usd'
                 })
                 status = 'successful'
-            }catch (e) {
+            } catch (e) {
                 console.log(e, 'error');
                 status = 'failure'
             }
