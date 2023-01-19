@@ -2,6 +2,7 @@ const {Router} = require('express');
 const {userController} = require("../controllers");
 const {userMldwr, commonMldwr, authMldwr} = require("../middlewares");
 const {Image_model, User, Album} = require("../dataBase");
+const multer = require('multer');
 
 
 const userRouter = Router();
@@ -34,7 +35,6 @@ const {ApiError} = require("../errors");
 const {tokenService, userService} = require("../services");
 const {sendEmail} = require("../services/email.service");
 const {CREATE_USER} = require("../constants/email.action.enum");
-const multer = require('multer');
 const storage = multer.diskStorage({
     destination: 'Images',
     filename: (req, file, cb) => {
