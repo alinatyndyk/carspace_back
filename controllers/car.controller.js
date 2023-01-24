@@ -25,7 +25,10 @@ const Stripe = require('stripe')(STRIPE_SECRET_KEY);
 module.exports = {
     getAllCars: async (req, res, next) => {
         try {
-            const insidesBody = ['vehicle_type', 'transmission', 'location', 'brand'] //TODO WRITE ALL PROPS
+            console.log(req.query);
+            const insidesBody = ['location', 'min_rent-time', 'vehicle_type', 'transmission', 'location', 'brand', 'engine_capacity', 'driver_included'] //TODO WRITE ALL PROPS
+            const gteInsides = ['no_of_seats', 'fits_bags', 'model_year']
+            const lteInsides = ['min_drivers_age', 'price_day_basis']
             let {page} = req.query;
             if (!page) page = 1
             const skip = (page - 1) * 2;
@@ -35,11 +38,11 @@ module.exports = {
                 console.log(key, value, 'ITER');
                 if (insidesBody.includes(key)) {
                     all[key] = value;
-                } else if (key === 'no_of_seats') {
+                } else if (gteInsides.includes(key)) {
                     all[key] = {$gte: value};
                 } else if (key === 'page') {
                     console.log(value, 'page value in iter');
-                } else if (key === 'min_drivers_age' || 'price_day_basis') {
+                } else if (lteInsides.includes(key)) {
                     all[key] = {$lte: value};
                 } else {
                     console.log(`car_features.${key}`, value);
@@ -85,7 +88,7 @@ module.exports = {
             console.log(req.body);
             const data = await carService.searchCarByDescription(description.toLowerCase()).skip(skip).limit(2);
             if (data.length === 0) {
-                return next(new ApiError('No cars found. Try later...', 400))
+                return next(new ApiError('No cars found. Try later...', 404))
             }
             res.json({page, cars: data});
         } catch (e) {
