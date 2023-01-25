@@ -86,7 +86,9 @@ module.exports = {
             console.log(skip, 'skip');
 
             console.log(req.body);
-            const data = await carService.searchCarByDescription(description.toLowerCase()).skip(skip).limit(2);
+            const str = req.body.description.replaceAll("_", ' ').toLowerCase();
+            console.log(str);
+            const data = await carService.searchCarByDescription(str).skip(skip).limit(2);
             if (data.length === 0) {
                 return next(new ApiError('No cars found. Try later...', 404))
             }
@@ -267,7 +269,6 @@ module.exports = {
             //---------------------------------------------------------------------
 
 
-            await sendEmail(email, ORDER_CREATION, {user_id: _id, car_id});
 
             const order = await orderCarService.createCarOrder({
                 user: _id,
@@ -278,6 +279,7 @@ module.exports = {
                 to_date: toDate,
                 Difference_In_Days
             });
+            await sendEmail(email, ORDER_CREATION, {user_id: _id, car_id});
 
             res.json(order);
         } catch (e) {
