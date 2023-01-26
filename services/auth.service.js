@@ -9,10 +9,6 @@ module.exports = {
         return AuthCompany.findOne(filter).populate('company');
     },
 
-    getOneCompanyByParams(filter) {
-        return AuthCompany.findOne(filter);
-    },
-
     deleteOneCompanyByParams(filter) {
         return AuthCompany.deleteOne(filter);
     },
@@ -30,24 +26,12 @@ module.exports = {
         return AuthUser.create(tokens)
     },
 
-    saveTokensAdmin(tokens) {
-        return AuthAdmin.create(tokens)
-    },
-
-    deleteOneAdminByParams(filter) {
-        return AuthAdmin.deleteOne(filter);
-    },
-
     getOneWithUser(filter) {
         return AuthUser.findOne(filter).populate('user');
     },
 
     getOneWithAdmin(filter) {
         return AuthAdmin.findOne(filter).populate('admin');
-    },
-
-    getOneUserByParams(filter) {
-        return AuthUser.findOne(filter);
     },
 
     deleteOneUserByParams(filter) {

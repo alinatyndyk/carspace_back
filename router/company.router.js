@@ -16,8 +16,6 @@ companyRouter.get('/:company_id',
 
 companyRouter.post('/',
     //access admin
-    // companyMldwr.companyBodyValid('newCompanyValidator'),
-    // companyMldwr.uniqueCompanyNumber,
     companyController.createCompanyImg); //only admin
 
 companyRouter.patch('/:company_id',

@@ -14,7 +14,6 @@ brandRouter.get('/:brand_id',
 
 brandRouter.post('/',
     //auth admin
-    //todo unique
     brandController.createBrand);
 
 brandRouter.delete('/:brand_id',

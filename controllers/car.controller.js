@@ -6,8 +6,6 @@ const {BRANDS} = require("../constants/regex.enum");
 const multer = require("multer");
 const {carValidators} = require("../validators");
 const {Car} = require("../dataBase");
-const {carMldwr} = require("../middlewares");
-const {object} = require("joi");
 const {STRIPE_SECRET_KEY} = require("../configs/configs");
 const storage = multer.diskStorage({
     destination: 'Images',
@@ -19,8 +17,6 @@ const storage = multer.diskStorage({
 const upload = multer({storage: storage}).any('files');
 
 const Stripe = require('stripe')(STRIPE_SECRET_KEY);
-
-// const stripe = require('stripe')('sk_test_51MIX9gIAfGNWX8Hhl3mH4IFJladHRo1ErYUQv2ZEIWdfJIwKXvk5zHwOGUrntdnmJz7af89NUZFm94dVRYV00fRl00gqg3UAPA');
 
 module.exports = {
     getAllCars: async (req, res, next) => {
@@ -35,7 +31,6 @@ module.exports = {
             console.log(skip, 'skip');
             const all = {};
             for (const [key, value] of Object.entries(req.query)) {
-                console.log(key, value, 'ITER');
                 if (insidesBody.includes(key)) {
                     all[key] = value;
                 } else if (gteInsides.includes(key)) {
@@ -45,13 +40,10 @@ module.exports = {
                 } else if (lteInsides.includes(key)) {
                     all[key] = {$lte: value};
                 } else {
-                    console.log(`car_features.${key}`, value);
                     all[`car_features.${key}`] = value;
                 }
             }
-            // const carsByInsides = await carService.getAllCars(all);
             const carsByInsides = await carService.getAllCars(all).skip(skip).limit(2);
-            console.log(all);
             if (!carsByInsides) {
                 return next(new ApiError('No cars with given parameters', 404))
             }
@@ -267,7 +259,6 @@ module.exports = {
             }
 
             //---------------------------------------------------------------------
-
 
 
             const order = await orderCarService.createCarOrder({

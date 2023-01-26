@@ -36,22 +36,7 @@ module.exports = {
         }
     },
 
-    // createCompany: async (req, res, next) => {
-    //     try {
-    //         const {email, name} = req.body;
-    //         const hashPassword = await tokenService.hashPassword(req.body.password);
-    //         await sendEmail(email, COMPANY_CREATE, {companyName: name});
-    //         const company = await companyService.createCompany({...req.body, password: hashPassword});
-    //         res.json(company);
-    //     } catch (e) {
-    //         next(e);
-    //     }
-    // },
-
     createCompanyImg: async (req, res, next) => {
-            // const company = await companyService.createCompany({...req.body, password: hashPassword});
-            // res.json(company);
-
             upload(req, res, async (err) => {
                 console.log(req.body, 'in upload');
                 console.log(req.file);

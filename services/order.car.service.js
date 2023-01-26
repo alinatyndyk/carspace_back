@@ -17,10 +17,6 @@ module.exports = {
         return OrderCar.findByIdAndDelete(_id);
     },
 
-    deleteCarOrderByParams(filter){
-        return OrderCar.deleteOne(filter);
-    },
-
     deleteCarOrders(filter = {}){
         return OrderCar.deleteMany(filter);
     },

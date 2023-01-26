@@ -2,19 +2,10 @@ const {Car} = require('../dataBase')
 
 module.exports = {
 
-    // getAllCars(filter = {}) {
-    //     return Car.find(filter)
-    // },
-
     getAllCars(filter = {}) {
         console.log(filter, 'filter service');
         return Car.find(filter)
     },
-
-
-    // db.collection.find({
-    //     "contractInfo.userid": "yourid"
-    // })
 
     getCarById(_id) {
         return Car.findById(_id)
@@ -41,7 +32,6 @@ module.exports = {
     },
 
     searchCarByDescription(key = {}) {
-        // return Car.find(key)
         return Car.find({description: {$regex: key},})
     }
 }

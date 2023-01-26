@@ -8,8 +8,6 @@ const {
     ACTION_TOKEN_SECRET, ORDER_CAR_WORD, FORGOT_PASSWORD_USER_WORD, FORGOT_PASSWORD_COMPANY_WORD
 } = require("../configs/configs");
 const {
-    ACCESS,
-    REFRESH,
     ACCESS_USER,
     REFRESH_USER,
     ACCESS_COMPANY,
@@ -27,24 +25,6 @@ module.exports = {
             throw new ApiError('Wrong email or password', 400);
         }
     },
-
-    comparePass: async (password, hashPassword) => {
-        const isPasswordsSame = await bcrypt.compare(password, hashPassword);
-
-        if (!isPasswordsSame) {
-            console.log('not same pass');
-        }
-    },
-
-    // createAuthTokens: (payload = {}) => {
-    //     const access_token = jwt.sign(payload, ACCESS_SECRET_WORD, {expiresIn: '10m'})
-    //     const refresh_token = jwt.sign(payload, REFRESH_SECRET_WORD, {expiresIn: '30d'})
-    //
-    //     return {
-    //         access_token,
-    //         refresh_token
-    //     }
-    // },
 
     createAuthTokensUser: (payload = {}) => {
         const access_token = jwt.sign(payload, ACCESS_SECRET_WORD_USER, {expiresIn: '10m'})
@@ -66,15 +46,15 @@ module.exports = {
         }
     },
 
-    createAuthTokensAdmin: (payload = {}) => {
-        const access_token = jwt.sign(payload, ACCESS_SECRET_WORD_ADMIN, {expiresIn: '10m'})
-        const refresh_token = jwt.sign(payload, REFRESH_SECRET_WORD_ADMIN, {expiresIn: '30d'})
-
-        return {
-            access_token,
-            refresh_token
-        }
-    },
+    // createAuthTokensAdmin: (payload = {}) => {
+    //     const access_token = jwt.sign(payload, ACCESS_SECRET_WORD_ADMIN, {expiresIn: '10m'})
+    //     const refresh_token = jwt.sign(payload, REFRESH_SECRET_WORD_ADMIN, {expiresIn: '30d'})
+    //
+    //     return {
+    //         access_token,
+    //         refresh_token
+    //     }
+    // },
 
     createActionToken: (tokenType, payload = {}) => {
         let expiresIn = '7d';
@@ -158,7 +138,6 @@ module.exports = {
             } else {
                 throw new ApiError(`Token not valid. ${e.message}`, 406);
             }
-            // return new ApiError(`Token not valid. ${e.message}`, 401);
         }
     },
 

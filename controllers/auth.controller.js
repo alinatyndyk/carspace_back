@@ -6,8 +6,7 @@ const {
     userService,
     emailService, companyService
 } = require("../services");
-const {FORGOT_PASSWORD,FORGOT_PASSWORD_USER, FORGOT_PASSWORD_COMPANY} = require("../constants/token.type.enum");
-const {FRONTEND_URL} = require("../configs/configs");
+const {FORGOT_PASSWORD, FORGOT_PASSWORD_USER, FORGOT_PASSWORD_COMPANY} = require("../constants/token.type.enum");
 const {AUTHORIZATION} = require("../constants/constants");
 const {sendEmail} = require("../services/email.service");
 const {RESET_PASSWORD} = require("../constants/email.action.enum");
@@ -16,14 +15,10 @@ module.exports = {
     loginCompany: async (req, res, next) => {
         try {
             const {password} = req.body;
-            console.log(password);
             const {password: hashPassword, _id} = req.company;
-
             await tokenService.comparePasswords(password, hashPassword);
 
             const authTokens = tokenService.createAuthTokensCompany({_id: _id._id});
-            console.log(_id, _id._id);
-
             await authService.saveTokensCompany({...authTokens, company: _id._id});
 
             res.json(authTokens);
@@ -35,7 +30,6 @@ module.exports = {
     logoutCompany: async (req, res, next) => {
         try {
             const {company, access_token} = req.tokenInfo;
-            console.log(company);
             await authService.deleteOneCompanyByParams({company, access_token});
 
             res.json('Logout page');
@@ -47,12 +41,10 @@ module.exports = {
     refreshCompany: async (req, res, next) => {
         try {
             const {company, refresh_token} = req.tokenInfo;
-
             await authService.deleteOneCompanyByParams({refresh_token});
 
-            const authTokens = tokenService.createAuthTokensCompany({_id: company});
-
-            const newTokens = await authService.saveTokensCompany({...authTokens, company});
+            const authTokens = tokenService.createAuthTokensCompany({_id: company._id});
+            await authService.saveTokensCompany({...authTokens, company: company._id});
 
             res.json(authTokens);
         } catch (e) {
@@ -62,16 +54,11 @@ module.exports = {
 // ------------------------------------------------------------------------
     loginUser: async (req, res, next) => {
         try {
-            console.log(req.body, 'in login user');
             const {password} = req.body;
             const {password: hashPassword, _id} = req.user;
-            console.log(req.user, 'user login req user');
-
             await tokenService.comparePasswords(password, hashPassword);
 
             const authTokens = tokenService.createAuthTokensUser({_id});
-            console.log(authTokens);
-
             await authService.saveTokensUser({...authTokens, user: _id});
 
             res.json(authTokens);
@@ -95,12 +82,10 @@ module.exports = {
     refreshUser: async (req, res, next) => {
         try {
             const {user, refresh_token} = req.tokenInfo;
-
             await authService.deleteOneUserByParams({refresh_token});
 
             const authTokens = tokenService.createAuthTokensUser({_id: user});
-
-            const newTokens = await authService.saveTokensUser({...authTokens, user});
+            await authService.saveTokensUser({...authTokens, user});
 
             res.json(authTokens);
         } catch (e) {
@@ -115,11 +100,9 @@ module.exports = {
             const action_token = tokenService.createActionToken(FORGOT_PASSWORD_USER, {_id});
 
             const url = `http://localhost:3000/password-reset?tokenAction=${action_token}`
-            console.log(url, '****************************************************');
-            console.log(action_token, '-----------------------------------------------');
 
             await emailService.sendEmail(email, FORGOT_PASSWORD, {url});
-            const actionSchema = await actionTokenService.createActionToken({
+            await actionTokenService.createActionToken({
                 tokenType: FORGOT_PASSWORD_USER,
                 user: _id,
                 token: action_token
@@ -139,9 +122,8 @@ module.exports = {
             const action_token = tokenService.createActionToken(FORGOT_PASSWORD_COMPANY, {_id});
 
             const url = `http://localhost:3000/password-reset/company?tokenAction=${action_token}`
-            console.log(url, '****************************************************');
             await emailService.sendEmail(email, FORGOT_PASSWORD, {url});
-            const actionSchema = await actionTokenService.createActionToken({
+            await actionTokenService.createActionToken({
                 tokenType: FORGOT_PASSWORD_COMPANY,
                 company: _id,
                 token: action_token
@@ -178,7 +160,6 @@ module.exports = {
     setNewPasswordForgotCompany: async (req, res, next) => {
         try {
             const {company} = req.tokenInfo;
-            console.log(company);
             const {password} = req.body;
             const token = req.get(AUTHORIZATION);
 
@@ -198,52 +179,5 @@ module.exports = {
             next(e);
         }
 
-    },
-
-    //_________________________________________________________________________________
-
-    loginAdmin: async (req, res, next) => {
-        try {
-            const {password} = req.body;
-            const {password: hashPassword, _id} = req.admin;
-
-            await tokenService.comparePasswords(password, hashPassword);
-
-            const authTokens = tokenService.createAuthTokensAdmin({_id});
-
-            await authService.saveTokensUser({...authTokens, admin: _id});
-
-            res.json({...authTokens, admin: req.admin});
-        } catch (e) {
-            next(e);
-        }
-    },
-
-    logoutAdmin: async (req, res, next) => {
-        try {
-            const {admin, access_token} = req.tokenInfo;
-            console.log(admin);
-            await authService.deleteOneAdminByParams({admin, access_token});
-
-            res.json('Logout page');
-        } catch (e) {
-            next(e);
-        }
-    },
-
-    refreshAdmin: async (req, res, next) => {
-        try {
-            const {admin, refresh_token} = req.tokenInfo;
-
-            await authService.deleteOneAdminByParams({refresh_token});
-
-            const authTokens = tokenService.createAuthTokensAdmin({_id: admin});
-
-            const newTokens = await authService.saveTokensAdmin({...authTokens, admin});
-
-            res.json(newTokens);
-        } catch (e) {
-            next(e);
-        }
-    },
+    }
 }

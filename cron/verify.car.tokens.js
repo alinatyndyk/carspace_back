@@ -7,7 +7,6 @@ module.exports = {
     checkOrderTokens: async () => {
         try {
             const carOrders = await orderCarService.getCarOrders();
-            console.log('cron job iteration');
             carOrders.forEach(order => {
                 console.log(order._id, 'in for each', order.car_token);
                 verifyOrderToken(order);

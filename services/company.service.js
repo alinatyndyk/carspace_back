@@ -14,10 +14,6 @@ module.exports = {
         return Company.findOne(filter);
     },
 
-    createCompany(companyObject){
-        return Company.create(companyObject);
-    },
-
     updateCompany(_id, newCompanyObject){
         return Company.findByIdAndUpdate(_id, newCompanyObject, {new: true});
     },

@@ -43,8 +43,6 @@ authRouter.post('/company/refresh',
 
 //______________________________________________________________
 
-//todo pass reset no forgot
-
 authRouter.post('/password_forgot/user',
     userMldwr.userBodyValid('userEmailValidator'),
     userMldwr.getUserDynamically('body', 'email'),

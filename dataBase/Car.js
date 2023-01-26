@@ -6,10 +6,6 @@ const carSchema = new Schema({
     model: {type: String, required: true},
     model_year: {type: Number, required: true},
     description: {type: String, trim: true, default: 'No description', lowercase: true, required: true},
-    // image: {
-    //     data: String,
-    //     link: String
-    // },
     images: {
         type: [Schema.Types.Mixed],
         data: String,
@@ -25,11 +21,8 @@ const carSchema = new Schema({
     no_of_seats: {type: Number, required: true},
     fits_bags: {type: Number, req: true},
     price_day_basis: {type: Number, trim: true, required: true},
-    // price_month_basis: {type: Number, required: true},
-    // price_week_basis: {type: Number, required: true},
     security_deposit: {type: Number, required: true},
     add_milage_charge: {type: Number, required: true},
-    //--------------------------------
     car_features: {
         digital_hud: {type: Boolean, default: false},
         cruise_control: {type: Boolean, default: false},
@@ -52,7 +45,6 @@ const carSchema = new Schema({
         usb: {type: Boolean, default: false},
         chiller_freezer: {type: Boolean, default: false},
     },
-    // status: {type: String}, todo if recieved ask sergey
     company: {
         type: Schema.Types.ObjectId,
         ref: 'company'

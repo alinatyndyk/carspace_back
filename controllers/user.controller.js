@@ -12,8 +12,7 @@ const storage = multer.diskStorage({
         cb(null, file.originalname);
     }
 })
-// const upload = multer({storage: storage}).single('testImage');
-const upload = multer({storage: storage}).array('testImage', 5);
+const upload = multer({storage: storage}).single('testImage');
 
 module.exports = {
     getAllUsers: async (req, res, next) => {
@@ -35,27 +34,11 @@ module.exports = {
         }
     },
 
-    // createUser: async (req, res, next) => {
-    //     try {
-    //         const {email, name} = req.body;
-    //         const hashPassword = await tokenService.hashPassword(req.body.password)
-    //         await sendEmail(email, CREATE_USER, {userName: name});
-    //         const createdUser = await userService.createUser({...req.body, password: hashPassword});
-    //         res.json(createdUser);
-    //     } catch (e) {
-    //         next(e);
-    //     }
-    // },
-
     createUserImg: (req, res) => {
         upload(req, res, (err) => {
-            console.log(req.body, 'in upload');
-            console.log(req.file);
             if (err) {
                 console.log(err);
             } else {
-                console.log('in else', req.body);
-                console.log(req.file, 'req.file');
                 const newImage = new User({
                     ...req.body,
                     image: {
@@ -67,30 +50,6 @@ module.exports = {
                     .then(() => res.send('successfully uploaded'))
                     .catch(err => new Error('Something is wrong'))
             }
-        })
-    },
-
-    createMultipleAlbum: (req, res) => {
-        upload(req, res, (err) => {
-            console.log(req.body, 'in upload');
-            // console.log(req.file, 'file');
-            console.log(req.files, 'files');
-            // if (err) {
-            //     console.log(err);
-            // } else {
-            //     console.log('in else', req.body);
-            //     console.log(req.file, 'req.file');
-            //     const newImage = new User({
-            //         ...req.body,
-            //         image: {
-            //             data: req.file,
-            //             contentType: 'image/png'
-            //         }
-            //     })
-            //     newImage.save()
-            //         .then(() => res.send('successfully uploaded'))
-            //         .catch(err => new Error('Something is wrong'))
-            // }
         })
     },
 

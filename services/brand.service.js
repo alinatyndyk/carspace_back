@@ -1,4 +1,4 @@
-const {Brand, Company} = require('../dataBase');
+const {Brand} = require('../dataBase');
 
 module.exports = {
 
