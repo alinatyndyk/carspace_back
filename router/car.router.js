@@ -2,7 +2,7 @@ const {Router} = require('express');
 
 const carController = require("../controllers/car.controller");
 const {authMldwr, carMldwr, commonMldwr} = require("../middlewares");
-const {carService} = require("../services");
+const {carService, orderCarService} = require("../services");
 const multer = require("multer");
 
 const storage = multer.diskStorage({
@@ -51,6 +51,11 @@ carRouter.post('/search/description',
 
 carRouter.delete('/', async (req, res) => {
     const result = await carService.deleteCars(); // for admin
+    res.json(result);
+});
+
+carRouter.delete('/delete/orders', async (req, res) => {
+    const result = await orderCarService.deleteCarOrders(); // for admin
     res.json(result);
 });
 

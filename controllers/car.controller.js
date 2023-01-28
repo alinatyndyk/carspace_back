@@ -24,18 +24,21 @@ module.exports = {
             console.log(req.query);
             const insidesBody = ['location', 'min_rent-time', 'vehicle_type', 'transmission', 'location', 'brand', 'engine_capacity', 'driver_included'] //TODO WRITE ALL PROPS
             const gteInsides = ['no_of_seats', 'fits_bags', 'model_year']
-            const lteInsides = ['min_drivers_age', 'price_day_basis']
+            const lteInsides = ['min_drivers_age'];
+            const ignoreInsides = ['page', 'price_day_basis_min', 'price_day_basis_max']
             let {page} = req.query;
             if (!page) page = 1
             const skip = (page - 1) * 2;
             console.log(skip, 'skip');
             const all = {};
+            const pricesInsides = {max: req.query.price_day_basis_min, min: req.query.price_day_basis_max}
+            all['price_day_basis'] = {$gt: pricesInsides.min, $lt: pricesInsides.max}
             for (const [key, value] of Object.entries(req.query)) {
                 if (insidesBody.includes(key)) {
                     all[key] = value;
                 } else if (gteInsides.includes(key)) {
                     all[key] = {$gte: value};
-                } else if (key === 'page') {
+                } else if (ignoreInsides.includes(key)) {
                     console.log(value, 'page value in iter');
                 } else if (lteInsides.includes(key)) {
                     all[key] = {$lte: value};
@@ -43,6 +46,7 @@ module.exports = {
                     all[`car_features.${key}`] = value;
                 }
             }
+            console.log(all, "all");
             const carsByInsides = await carService.getAllCars(all).skip(skip).limit(2);
             if (!carsByInsides) {
                 return next(new ApiError('No cars with given parameters', 404))
@@ -116,32 +120,22 @@ module.exports = {
 
     createCarImg: async (req, res, next) => {
         upload(req, res, async (err) => {
-            console.log(req.body, 'req body in upload');
-            console.log(req.files, 'req files');
             const {brand} = req.body;
-            console.log(brand, 'brand in upload');
-            console.log(BRANDS.includes(brand));
             const {_id} = req.tokenInfo.company;
-            console.log(_id, 'token company id');
 
             if (BRANDS.includes(brand) === false) {
-                console.log('not includes');
                 return next(new ApiError('Not includes this brand', 400));
             }
             const brand_db = brand.replace(/\s/g, '_');
-            console.log(brand_db, 'brand_db');
             const validate = carValidators.newCarValidator.validate(req.body);
 
             if (validate.error) {
-                console.log(validate.error.message, 'validate car error');
                 return next(new ApiError(validate.error.message, 400))
             }
 
             if (!req.files) {
                 return next(new ApiError('Upload at least one picture', 400))
             } else {
-                console.log(req.body, 'req body in else');
-
                 let arrAlbum = [];
                 req.files.forEach(file => {
                     console.log(file, 'iter');
@@ -150,7 +144,6 @@ module.exports = {
                         link: `http://localhost:5000/photos/${file.filename}`
                     }
                     arrAlbum.push(image);
-                    console.log(arrAlbum, 'arr album');
                 })
 
                 const newCar = new Car({

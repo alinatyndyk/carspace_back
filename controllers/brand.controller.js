@@ -1,5 +1,6 @@
 const {brandService} = require("../services");
 const {BRANDS} = require("../constants/regex.enum");
+const {regexBrandPush} = require("../constants/car.valid");
 module.exports = {
     getAllBrands: async (req, res, next) => {
         try {
@@ -27,7 +28,6 @@ module.exports = {
             const brand_db = carBrand.replace(/\s/g, '_');
             const brand = await brandService.createBrand({...req.body, brand_db});
             await regexBrandPush(carBrand);
-            //brand validtor todo brand validator
             res.json(brand);
         } catch (e) {
             next(e);

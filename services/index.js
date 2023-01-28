@@ -3,7 +3,6 @@ module.exports = {
     companyService: require('./company.service'),
     userService: require('./user.service'),
     brandService: require('./brand.service'),
-    adminService: require('./admin.service'),
     tokenService: require('./token.service'),
     authService: require('./auth.service'),
     actionTokenService: require('./action.token.service'),

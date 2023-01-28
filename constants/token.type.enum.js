@@ -1,4 +1,6 @@
 module.exports = {
+    ACCESS: 'access',
+    REFRESH: 'refresh',
     ACCESS_USER: 'access_user',
     REFRESH_USER: 'refresh_user',
     ACCESS_COMPANY: 'access_company',

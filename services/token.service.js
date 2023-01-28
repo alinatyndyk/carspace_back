@@ -12,7 +12,7 @@ const {
     REFRESH_USER,
     ACCESS_COMPANY,
     REFRESH_COMPANY, ACCESS_ADMIN, REFRESH_ADMIN, FORGOT_PASSWORD, ORDER_CAR, FORGOT_PASSWORD_USER,
-    FORGOT_PASSWORD_COMPANY
+    FORGOT_PASSWORD_COMPANY, ACCESS, REFRESH
 } = require("../constants/token.type.enum");
 const orderCarService = require("../services/order.car.service");
 
