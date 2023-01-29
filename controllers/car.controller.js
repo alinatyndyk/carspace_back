@@ -31,8 +31,10 @@ module.exports = {
             const skip = (page - 1) * 2;
             console.log(skip, 'skip');
             const all = {};
+            if(req.query.price_day_basis_min && req.query.price_day_basis_max){
             const pricesInsides = {max: req.query.price_day_basis_min, min: req.query.price_day_basis_max}
             all['price_day_basis'] = {$gt: pricesInsides.min, $lt: pricesInsides.max}
+            }
             for (const [key, value] of Object.entries(req.query)) {
                 if (insidesBody.includes(key)) {
                     all[key] = value;
@@ -94,29 +96,29 @@ module.exports = {
         }
     },
 
-    createCar: async (req, res, next) => {
-        try {
-            const {_id} = req.tokenInfo.company;
-            const {brand} = req.body;
-
-            console.log(BRANDS.includes(brand));
-
-            if (BRANDS.includes(brand) === false) {
-                console.log('not includes');
-                return next(new ApiError('Not includes this brand', 400));
-            }
-
-            const brand_db = brand.replace(/\s/g, '_');
-            const car = await carService.createCar({...req.body, company: _id, brand_db});
-            const companyCars = await carService.getCarsByParams({company: _id});
-            const brandCars = await carService.getCarsByParams({brand});
-            await companyService.updateCompany(_id, {cars: [...companyCars]});
-            await brandService.updateBrand({brand}, {cars: [...brandCars]});
-            res.json(car);
-        } catch (e) {
-            next(e);
-        }
-    },
+    // createCar: async (req, res, next) => {
+    //     try {
+    //         const {_id} = req.tokenInfo.company;
+    //         const {brand} = req.body;
+    //
+    //         console.log(BRANDS.includes(brand));
+    //
+    //         if (BRANDS.includes(brand) === false) {
+    //             console.log('not includes');
+    //             return next(new ApiError('Not includes this brand', 400));
+    //         }
+    //
+    //         const brand_db = brand.replace(/\s/g, '_');
+    //         const car = await carService.createCar({...req.body, company: _id, brand_db});
+    //         const companyCars = await carService.getCarsByParams({company: _id});
+    //         const brandCars = await carService.getCarsByParams({brand});
+    //         await companyService.updateCompany(_id, {cars: [...companyCars]});
+    //         await brandService.updateBrand({brand}, {cars: [...brandCars]});
+    //         res.json(car);
+    //     } catch (e) {
+    //         next(e);
+    //     }
+    // },
 
     createCarImg: async (req, res, next) => {
         upload(req, res, async (err) => {
