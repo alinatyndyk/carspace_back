@@ -7,7 +7,6 @@ const passValidator = Joi.string().regex(PASSWORD)
 const emailValidator = Joi.string().regex(EMAIL).lowercase().trim()
 const numberValidator = Joi.string().regex(NUMBER)
 
-
 const PasswordValidator = Joi.object({
     password: passValidator.required().error(new ApiError('The password is not valid', 400)),
 

@@ -51,7 +51,7 @@ module.exports = {
             next(e);
         }
     },
-// ------------------------------------------------------------------------
+
     loginUser: async (req, res, next) => {
         try {
             const {password} = req.body;

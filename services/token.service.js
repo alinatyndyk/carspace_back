@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 const {ApiError} = require("../errors");
 const {
     ACCESS_SECRET_WORD, REFRESH_SECRET_WORD, ACCESS_SECRET_WORD_USER, REFRESH_SECRET_WORD_USER,
-    ACCESS_SECRET_WORD_COMPANY, REFRESH_SECRET_WORD_COMPANY, ACCESS_SECRET_WORD_ADMIN, REFRESH_SECRET_WORD_ADMIN,
+    ACCESS_SECRET_WORD_COMPANY, REFRESH_SECRET_WORD_COMPANY,
     ACTION_TOKEN_SECRET, ORDER_CAR_WORD, FORGOT_PASSWORD_USER_WORD, FORGOT_PASSWORD_COMPANY_WORD
 } = require("../configs/configs");
 const {
@@ -45,16 +45,6 @@ module.exports = {
             refresh_token: `Company ${refresh_token}`
         }
     },
-
-    // createAuthTokensAdmin: (payload = {}) => {
-    //     const access_token = jwt.sign(payload, ACCESS_SECRET_WORD_ADMIN, {expiresIn: '10m'})
-    //     const refresh_token = jwt.sign(payload, REFRESH_SECRET_WORD_ADMIN, {expiresIn: '30d'})
-    //
-    //     return {
-    //         access_token,
-    //         refresh_token
-    //     }
-    // },
 
     createActionToken: (tokenType, payload = {}) => {
         let expiresIn = '7d';

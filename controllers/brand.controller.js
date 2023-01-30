@@ -1,11 +1,9 @@
 const {brandService} = require("../services");
-const {BRANDS} = require("../constants/regex.enum");
-const {regexBrandPush} = require("../constants/car.valid");
+const {regexBrandPush, regexBrandSlice} = require("../constants/car.valid");
 module.exports = {
     getAllBrands: async (req, res, next) => {
         try {
             const brands = await brandService.getAllBrands();
-            console.log(BRANDS, "BARNDS");
             res.json(brands);
         } catch (e) {
             next(e);

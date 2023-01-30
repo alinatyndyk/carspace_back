@@ -22,8 +22,6 @@ module.exports = {
 
             const tokenInfo = await authService.getOneWithCompany({access_token});
 
-            console.log(tokenInfo, '----------------------------------------token info company');
-
             if (!tokenInfo) {
                 return next(new ApiError('No valid token for company. Forbidden', 401))
             }
@@ -81,28 +79,6 @@ module.exports = {
             next(e)
         }
     },
-
-    // accessDecodeValidation: async (req, res, next) => {
-    //     try {
-    //         const access_token = req.get(ACCESS_TOKEN);
-    //
-    //         if (!access_token) {
-    //             return next(new ApiError('You are unauthorized. No access token', 401))
-    //         }
-    //         tokenService.checkToken(access_token, ACCESS_USER);
-    //         const tokenInfo = await authService.getOneWithUser({access_token});
-    //
-    //         if (!tokenInfo) {
-    //             return next(new ApiError('No valid token for user', 401))
-    //         }
-    //
-    //         req.tokenInfo = tokenInfo;
-    //         console.log(req.tokenInfo, 'token info');
-    //         next();
-    //     } catch (e) {
-    //         next(e)
-    //     }
-    // },
 
     isRefreshTokenValidUser: async (req, res, next) => {
         try {
@@ -210,8 +186,6 @@ module.exports = {
             tokenService.checkToken(access_token, ACCESS_ADMIN);
 
             const tokenInfo = await authService.getOneWithAdmin({access_token});
-
-            console.log(tokenInfo, '----------------------------------------token info');
 
             if (!tokenInfo) {
                 return next(new ApiError('No valid token for admin', 401))

@@ -20,7 +20,6 @@ module.exports = {
     getAllAuthCompany() {
         return AuthCompany.find();
     },
-    //-------------------------------------------------------------------------------------
 
     saveTokensUser(tokens) {
         return AuthUser.create(tokens)

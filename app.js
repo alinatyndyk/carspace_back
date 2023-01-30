@@ -9,19 +9,9 @@ const corsOptions = {
 }
 require('dotenv').config()
 
-const multer = require('multer');
-const storage = multer.diskStorage({
-    destination: 'Images',
-    filename: (req, file, cb) => {
-        console.log(file);
-        cb(null, file.originalname);
-    }
-})
-const upload = multer({storage: storage}).array('testImage', 4);
-
 const carRouter = require('./router/car.router')
 const {PORT, MONGO_URL, STRIPE_SECRET_KEY} = require("./configs/configs");
-const {userRouter, companyRouter, authRouter, paymentRouter, brandRouter} = require("./router");
+const {userRouter, companyRouter, authRouter, brandRouter} = require("./router");
 const {mainErrorHandler} = require("./errors")
 const runCronJobs = require('./cron/cron');
 const {regexBrand} = require("./constants/car.valid");
@@ -44,7 +34,6 @@ app.use('/users', userRouter)
 app.use('/companies', companyRouter)
 app.use('/brands', brandRouter)
 app.use('/auth', authRouter)
-// app.use('/payment', paymentRouter)
 
 const Stripe = require('stripe')(STRIPE_SECRET_KEY);
 app.post('/payment', async (req, res) => {
@@ -66,10 +55,10 @@ app.post('/payment', async (req, res) => {
     res.json({error, status})
 })
 
-app.use('/photos', express.static('Images'))
+app.use('/photos', express.static('Images'));
+
 app.get('/upload/:path', (req, res) => {
     console.log(req.params);
-    // res.download('Images/'+req.params.path)
     res.render('Images/' + req.params.path)
 });
 app.use('*', (req, res, next) => {

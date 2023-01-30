@@ -123,7 +123,6 @@ module.exports = {
 
                 let output;
                 orders?.forEach(order => {
-                    console.log('in orders for each');
                     const daylist = getDaysArray(new Date(order.from_date).setHours(0), new Date(order.to_date).setHours(0));
                     daylist.map((v) => v.toISOString().slice(0, 10)).join("");
                     const daylistBook = getDaysArray(new Date(from_date).setHours(0), new Date(to_date).setHours(0));
@@ -135,12 +134,12 @@ module.exports = {
                     });
                     return output
                 })
-                if (output === undefined) {
+
+                if (output === undefined || []) {
                     availableCars.push(car);
                 }
             }
             res.json(availableCars);
-            // next();
         } catch (e) {
             next(e)
         }

@@ -3,7 +3,6 @@ const {Car} = require('../dataBase')
 module.exports = {
 
     getAllCars(filter = {}) {
-        console.log(filter, 'filter service');
         return Car.find(filter)
     },
 
@@ -13,10 +12,6 @@ module.exports = {
 
     getCarsByParams(filter) {
         return Car.find(filter)
-    },
-
-    createCar(carObject) {
-        return Car.create(carObject)
     },
 
     updateCar(_id, newCarObject) {

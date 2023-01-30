@@ -1,10 +1,12 @@
 const {userService, tokenService} = require("../services");
 const {ApiError} = require("../errors");
-const {WELCOME, DELETE_USER, CREATE_USER} = require("../constants/email.action.enum");
+const {DELETE_USER, CREATE_USER} = require("../constants/email.action.enum");
 const {sendEmail} = require("../services/email.service");
-const {User, Image_model} = require("../dataBase");
+const {User} = require("../dataBase");
 const multer = require('multer');
 const {Error} = require("mongoose");
+const {userValidators} = require("../validators");
+
 const storage = multer.diskStorage({
     destination: 'Images',
     filename: (req, file, cb) => {
@@ -35,20 +37,31 @@ module.exports = {
     },
 
     createUserImg: (req, res) => {
-        upload(req, res, (err) => {
-            if (err) {
-                console.log(err);
+        upload(req, res, async (err) => {
+
+            const validate = userValidators.newUserValidator.validate(req.body);
+
+            if (validate.error) {
+                console.log('validate error', validate.error.message);
+                return next(new ApiError(validate.error.message, 400))
+            }
+
+            const {email, name} = req.body;
+            const hashPassword = await tokenService.hashPassword(req.body.password);
+            await sendEmail(email, CREATE_USER, {userName: name});
+            if (!req.file) {
+                return next(new ApiError('Upload at least one picture', 400))
             } else {
                 const newImage = new User({
-                    ...req.body,
+                    ...req.body, password: hashPassword,
                     image: {
-                        data: req.file,
-                        contentType: 'image/png'
+                        data: req.file.filename,
+                        link: `http://localhost:5000/photos/${req.file.filename}`
                     }
                 })
                 newImage.save()
                     .then(() => res.send('successfully uploaded'))
-                    .catch(err => new Error('Something is wrong'))
+                    .catch(err => console.log(err))
             }
         })
     },
