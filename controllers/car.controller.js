@@ -21,7 +21,6 @@ const Stripe = require('stripe')(STRIPE_SECRET_KEY);
 module.exports = {
     getAllCars: async (req, res, next) => {
         try {
-            console.log(req.query);
             const insidesBody = ['location', 'min_rent-time', 'vehicle_type', 'transmission', 'location', 'brand', 'engine_capacity', 'driver_included'] //TODO WRITE ALL PROPS
             const gteInsides = ['no_of_seats', 'fits_bags', 'model_year']
             const lteInsides = ['min_drivers_age'];
@@ -34,8 +33,6 @@ module.exports = {
                 const pricesInsides = {max: req.query.price_day_basis_min, min: req.query.price_day_basis_max}
                 all['price_day_basis'] = {$gt: pricesInsides.min, $lt: pricesInsides.max}
             }
-            console.log(all);
-            console.log(all.price_day_basis);
             for (const [key, value] of Object.entries(req.query)) {
                 if (insidesBody.includes(key)) {
                     all[key] = value;
@@ -49,12 +46,12 @@ module.exports = {
                     all[`car_features.${key}`] = value;
                 }
             }
-            console.log(all);
             const carsByInsides = await carService.getAllCars(all).skip(skip).limit(2);
-            if (!carsByInsides) {
+            console.log(carsByInsides, 'cars by insides');
+            console.log(carsByInsides.length);
+            if (carsByInsides.length === undefined || 0) {
                 return next(new ApiError('No cars with given parameters', 404))
             }
-            console.log(carsByInsides);
             res.json({page, cars: carsByInsides});
         } catch (e) {
             next(e);
