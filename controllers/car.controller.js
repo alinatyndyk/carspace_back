@@ -47,9 +47,7 @@ module.exports = {
                 }
             }
             const carsByInsides = await carService.getAllCars(all).skip(skip).limit(2);
-            console.log(carsByInsides, 'cars by insides');
-            console.log(carsByInsides.length);
-            if (carsByInsides.length === undefined || 0) {
+            if (!carsByInsides.length) {
                 return next(new ApiError('No cars with given parameters', 404))
             }
             res.json({page, cars: carsByInsides});
