@@ -110,6 +110,13 @@ module.exports = {
         try {
             let availableCars = [];
             const {from_date, to_date} = req.body;
+
+            const fromDate = new Date(from_date).getTime();
+            const toDate = new Date(to_date).getTime();
+            const Today = new Date().getTime();
+
+            if(Today > fromDate){return next(new ApiError('Choose a date after or equal to today', 409))}
+            if(toDate < fromDate){return next(new ApiError('Choose a date after starting date', 409))}
             const cars = await carService.searchCarByDescription(req.body.description);
             const getDaysArray = function (s, e) {
                 for (a = [], d = new Date(s); d <= new Date(e); d.setDate(d.getDate() + 1)) {
