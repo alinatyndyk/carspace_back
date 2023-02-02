@@ -21,17 +21,22 @@ const Stripe = require('stripe')(STRIPE_SECRET_KEY);
 module.exports = {
     getAllCars: async (req, res, next) => {
         try {
+            console.log(req.query, 'req query');
             const insidesBody = ['location', 'min_rent-time', 'vehicle_type', 'transmission', 'location', 'brand', 'engine_capacity', 'driver_included'] //TODO WRITE ALL PROPS
             const gteInsides = ['no_of_seats', 'fits_bags', 'model_year']
             const lteInsides = ['min_drivers_age'];
-            const ignoreInsides = ['page', 'price_day_basis_min', 'price_day_basis_max']
+            const ignoreInsides = ['page', 'price_day_basis_min', 'price_day_basis_max', 'company']
             let {page} = req.query;
             if (!page) page = 1
             const skip = (page - 1) * 2;
             const all = {};
+
             if (req.query.price_day_basis_min && req.query.price_day_basis_max) {
                 const pricesInsides = {max: req.query.price_day_basis_min, min: req.query.price_day_basis_max}
                 all['price_day_basis'] = {$gt: pricesInsides.min, $lt: pricesInsides.max}
+            }
+            if (req.query?.company) {
+                all['company'] =  req.query.company;
             }
             for (const [key, value] of Object.entries(req.query)) {
                 if (insidesBody.includes(key)) {
@@ -46,6 +51,7 @@ module.exports = {
                     all[`car_features.${key}`] = value;
                 }
             }
+            console.log(all, 'all');
             const carsByInsides = await carService.getAllCars(all).skip(skip).limit(2);
             if (!carsByInsides.length) {
                 return next(new ApiError('No cars with given parameters', 404))
@@ -83,23 +89,27 @@ module.exports = {
         }
     },
 
-    createCarImg: async (req, res, next) => {
+    createCarImg:  (req, res, next) => {
+        console.log(req.files);
+        console.log(req.body);
         upload(req, res, async (err) => {
             const {brand} = req.body;
             const {_id} = req.tokenInfo.company;
 
-            if (BRANDS.includes(brand) === false) {
-                return next(new ApiError('Not includes this brand', 400));
-            }
+            // if (BRANDS.includes(brand) === false) {
+            //     return next(new ApiError('Not includes this brand', 400));
+            // }
             const brand_db = brand.replace(/\s/g, '_');
-            const validate = carValidators.newCarValidator.validate(req.body);
+            // const validate = carValidators.newCarValidator.validate(req.body);
 
-            if (validate.error) {
-                return next(new ApiError(validate.error.message, 400))
-            }
-
+            // if (validate.error) {
+            //     return next(new ApiError(validate.error.message, 400))
+            // }
+            console.log(req.files);
+            console.log(req.file);
+            console.log(req.body);
             if (!req.files) {
-                return next(new ApiError('Upload at least one picture', 400))
+                return next(new ApiError('Upload at least one file', 400))
             } else {
                 let arrAlbum = [];
                 req.files.forEach(file => {

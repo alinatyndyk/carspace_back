@@ -29,6 +29,7 @@ const newCarValidator = Joi.object({
     fits_bags: numberValidator.required(),
     price_day_basis: priceValidator.required(),
     testImage: imageValidator,
+    files: imageValidator,
     security_deposit: rentValidator.required(),
     add_milage_charge: rentValidator.required(),
     car_features: Joi.object({
