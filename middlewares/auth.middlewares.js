@@ -6,14 +6,13 @@ const {
     REFRESH_COMPANY,
     ACCESS_USER,
     REFRESH_USER,
-    ACCESS_ADMIN, REFRESH_ADMIN, FORGOT_PASSWORD_COMPANY, FORGOT_PASSWORD_USER
+    FORGOT_PASSWORD_COMPANY, FORGOT_PASSWORD_USER
 } = require("../constants/token.type.enum");
 
 module.exports = {
     isAccessTokenValidCompany: async (req, res, next) => {
         try {
             const access_token = req.get(ACCESS_TOKEN);
-            console.log(access_token, 'mldwr access');
             if (!access_token) {
                 console.log('null');
                 return next(new ApiError('You are unauthorized. No access token for company', 403)) //todo change codes

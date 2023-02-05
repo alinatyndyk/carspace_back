@@ -21,7 +21,7 @@ const Stripe = require('stripe')(STRIPE_SECRET_KEY);
 module.exports = {
     getAllCars: async (req, res, next) => {
         try {
-            console.log(req.query, 'req query');
+            console.log(req.query);
             const insidesBody = ['location', 'min_rent-time', 'vehicle_type', 'transmission', 'location', 'brand', 'engine_capacity', 'driver_included'] //TODO WRITE ALL PROPS
             const gteInsides = ['no_of_seats', 'fits_bags', 'model_year']
             const lteInsides = ['min_drivers_age'];
@@ -38,6 +38,11 @@ module.exports = {
             if (req.query?.company) {
                 all['company'] =  req.query.company;
             }
+            if(req.query.description){
+                const str = req.query.description.replaceAll("_", ' ').toLowerCase();
+                console.log(str, 'str');
+                all['description'] = {$regex: str}
+            }
             for (const [key, value] of Object.entries(req.query)) {
                 if (insidesBody.includes(key)) {
                     all[key] = value;
@@ -51,7 +56,7 @@ module.exports = {
                     all[`car_features.${key}`] = value;
                 }
             }
-            console.log(all, 'all');
+            console.log(all);
             const carsByInsides = await carService.getAllCars(all).skip(skip).limit(2);
             if (!carsByInsides.length) {
                 return next(new ApiError('No cars with given parameters', 404))
@@ -79,6 +84,7 @@ module.exports = {
             const skip = (page - 1) * 2;
 
             const str = req.body.description.replaceAll("_", ' ').toLowerCase();
+            console.log(str, 'str');
             const data = await carService.searchCarByDescription(str).skip(skip).limit(2);
             if (data.length === 0) {
                 return next(new ApiError('No cars found. Try later...', 404))
@@ -96,18 +102,15 @@ module.exports = {
             const {brand} = req.body;
             const {_id} = req.tokenInfo.company;
 
-            // if (BRANDS.includes(brand) === false) {
-            //     return next(new ApiError('Not includes this brand', 400));
-            // }
+            if (BRANDS.includes(brand) === false) {
+                return next(new ApiError('Not includes this brand', 400));
+            }
             const brand_db = brand.replace(/\s/g, '_');
-            // const validate = carValidators.newCarValidator.validate(req.body);
+            const validate = carValidators.newCarValidator.validate(req.body);
 
-            // if (validate.error) {
-            //     return next(new ApiError(validate.error.message, 400))
-            // }
-            console.log(req.files);
-            console.log(req.file);
-            console.log(req.body);
+            if (validate.error) {
+                return next(new ApiError(validate.error.message, 400))
+            }
             if (!req.files) {
                 return next(new ApiError('Upload at least one file', 400))
             } else {
