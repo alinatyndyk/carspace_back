@@ -152,8 +152,10 @@ module.exports = {
             if (_id.toString() !== company_id.toString()) {
                 return next(new ApiError('Access token doesnt belong to the car you are trying to update'))
             }
+            console.log('new car befoer');
 
             const car = await carService.updateCar(car_id, req.body,);
+            console.log('new car afetr');
             res.json(car);
         } catch (e) {
             next(e);

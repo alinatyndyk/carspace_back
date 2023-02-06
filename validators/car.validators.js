@@ -59,6 +59,7 @@ const newCarValidator = Joi.object({
 const updateCarValidator = Joi.object({
     model: modelValidator,
     model_year: yearValidator,
+    price_day_basis: priceValidator,
     description: descriptionValidator
 });
 
