@@ -60,7 +60,6 @@ module.exports = {
         try {
             const access_token = req.get(ACCESS_TOKEN);
             if (!access_token) {
-                console.log('no token');
                 return next(new ApiError('You are unauthorized. No access token for user', 401))
             }
             tokenService.checkToken(access_token, ACCESS_USER);
