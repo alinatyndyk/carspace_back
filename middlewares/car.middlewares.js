@@ -1,13 +1,10 @@
 const {carValidators} = require("../validators");
 const {ApiError} = require("../errors");
 const {carService, orderCarService} = require("../services");
-const {OrderCar} = require("../dataBase");
 
 module.exports = {
     carBodyValid: (validatorType) => async (req, res, next) => {
         try {
-            console.log(validatorType);
-            console.log(req.body);
             const validate = carValidators[validatorType].validate(req.body);
 
             if (validate.error) {
@@ -58,8 +55,6 @@ module.exports = {
         try {
             let availableCars = [];
             const {from_date, to_date} = req.body;
-            console.log(req.query, 'req query');
-            console.log(req.body);
 
             let {page} = req.query;
             let {page: pageBody} = req.body;
@@ -69,7 +64,6 @@ module.exports = {
                 if (!pageBody) page = 1;
             }
             const limit = 2;
-            // const skip = (page - 1) * 2;
 
             const fromDate = new Date(from_date).getTime();
             const toDate = new Date(to_date).getTime();
@@ -85,10 +79,7 @@ module.exports = {
             }
 
             const str = req.body.description.replaceAll("_", ' ').toLowerCase();
-            console.log(str, 'str');
-            console.log('filter by dates controller');
 
-            // const cars = await carService.searchCarByDescription(req.body.description.toLowerCase());
             const cars = await carService.searchCarByDescription(str);
             const getDaysArray = function (s, e) {
                 for (a = [], d = new Date(s); d <= new Date(e); d.setDate(d.getDate() + 1)) {
@@ -114,20 +105,14 @@ module.exports = {
                     return output
                 })
 
-                console.log(output, 'output');
-
-                // if (output === undefined || []) {
-                //     availableCars.push(car);
-                // }
-
                 if (!output || !output.length) {
                     availableCars.push(car);
                 }
             }
             const finish = page * limit;
             const start = finish - limit;
-            console.log({page, limit, finish, start});
             const slicedCars = availableCars.slice(start, finish);
+
             res.json(slicedCars);
         } catch (e) {
             next(e)

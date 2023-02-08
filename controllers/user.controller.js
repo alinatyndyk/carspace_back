@@ -4,7 +4,6 @@ const {DELETE_USER, CREATE_USER} = require("../constants/email.action.enum");
 const {sendEmail} = require("../services/email.service");
 const {User} = require("../dataBase");
 const multer = require('multer');
-const {Error} = require("mongoose");
 const {userValidators} = require("../validators");
 
 const storage = multer.diskStorage({

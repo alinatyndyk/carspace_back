@@ -43,7 +43,6 @@ module.exports = {
             const {user_id} = req.params;
 
             const user = await userService.getOneByParams({email, _id: {$ne: user_id}});
-            console.log(user, 'unique email ******************');
 
             if (user) {
                 return next(new ApiError('This email is already in use', 400));

@@ -21,7 +21,6 @@ const Stripe = require('stripe')(STRIPE_SECRET_KEY);
 module.exports = {
     getAllCars: async (req, res, next) => {
         try {
-            console.log(req.query);
             const insidesBody = ['location', 'min_rent-time', 'vehicle_type', 'transmission', 'location', 'brand', 'engine_capacity', 'driver_included'] //TODO WRITE ALL PROPS
             const gteInsides = ['no_of_seats', 'fits_bags', 'model_year']
             const lteInsides = ['min_drivers_age'];
@@ -56,7 +55,6 @@ module.exports = {
                     all[`car_features.${key}`] = value;
                 }
             }
-            console.log(all);
             const carsByInsides = await carService.getAllCars(all).skip(skip).limit(2);
             if (!carsByInsides.length) {
                 return next(new ApiError('No cars with given parameters', 404))
@@ -187,7 +185,7 @@ module.exports = {
             const {car_id} = req.params; //string
             const {from_date, to_date} = req.body;
 
-            const {min_drivers_age, min_rent_time, price_day_basis, company} = await carService.getCarById(car_id);
+            const {min_drivers_age, min_rent_time, company} = await carService.getCarById(car_id);
 
             if (min_drivers_age > age) {
                 return next(new ApiError('Your age is not appropriate for this order', 400));
@@ -205,8 +203,8 @@ module.exports = {
             const carToken = await tokenService.createCarToken({nbf: fromDate, exports: toDate}); //nbf exp
 
 
-            let status, error;
-            const {carId, token, amount} = req.body;
+            let status;
+            const {token, amount} = req.body;
             try {
                 await Stripe.charges.create({
                     source: token.id,

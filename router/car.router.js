@@ -3,16 +3,6 @@ const {Router} = require('express');
 const carController = require("../controllers/car.controller");
 const {authMldwr, carMldwr, commonMldwr} = require("../middlewares");
 const {carService, orderCarService} = require("../services");
-// const multer = require("multer");
-//
-// const storage = multer.diskStorage({
-//     destination: 'Images',
-//     filename: (req, file, cb) => {
-//         console.log(file);
-//         cb(null, file.originalname);
-//     }
-// })
-// const upload = multer({storage: storage}).any('files');
 
 const carRouter = Router();
 

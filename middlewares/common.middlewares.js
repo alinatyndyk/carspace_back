@@ -1,7 +1,7 @@
 const {isObjectIdOrHexString} = require("mongoose");
 
 const {ApiError} = require("../errors");
-const {userValidators, commonValidators} = require("../validators");
+const {commonValidators} = require("../validators");
 
 module.exports = {
     validIdMldwr: (fieldName, from = 'params') => async (req, res, next) => {

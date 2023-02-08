@@ -13,11 +13,9 @@ brandRouter.get('/:brand_id',
     brandController.getBrandById); //everyone
 
 brandRouter.post('/',
-    //auth admin
     brandController.createBrand);
 
 brandRouter.delete('/:brand_id',
-    //auth admin
     commonMldwr.validIdMldwr('brand_id', 'params'),
     brandController.deleteBrand);
 
