@@ -97,12 +97,12 @@ module.exports = {
             const today = new Date().getTime();
             const orderStart = new Date(orderToDelete.from_date).getTime();
 
-            if(orderStart < today){
-                return next(new ApiError('Its too late. You cant cancel this order anymore'));
-            }
-
             if (_id.toString() !== orderToDelete.user._id.toString()) {
                 return next(new ApiError('Access token doesnt belong to the order you are trying to delete'));
+            }
+
+            if(orderStart < today){
+                return next(new ApiError('Its too late. You cant cancel this order anymore'));
             }
 
             await sendEmail(email, ORDER_CANCEL, {userName: name, user_id: _id, order_id});

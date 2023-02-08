@@ -109,7 +109,8 @@ module.exports = {
             })
 
 
-            res.json({action_token})
+            // res.json({action_token}) //todo delete response action token
+            res.send('The letter was sent');
         } catch (e) {
             next(e);
         }

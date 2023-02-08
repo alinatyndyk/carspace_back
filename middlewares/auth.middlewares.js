@@ -105,7 +105,6 @@ module.exports = {
     isActionTokenValid: (tokenType) => async (req, res, next) => {
         try {
             const token = req.get(AUTHORIZATION);
-            console.log(tokenType);
             tokenService.checkToken(token, tokenType);
 
             if (!token) {
@@ -117,7 +116,6 @@ module.exports = {
             } else if (tokenType === FORGOT_PASSWORD_USER) {
                 tokenInfo = await actionTokenService.getOneBySearchParamsWithUser({tokenType, token});
             }
-
 
             if (!tokenInfo) {
                 return next(new ApiError('no valid token', 401))
