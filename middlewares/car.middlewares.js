@@ -70,12 +70,10 @@ module.exports = {
             const Today = new Date().getTime();
 
             if (Today > fromDate) {
-                console.log('today > fromdate');
-                return next(new ApiError('Choose a date after or equal to today', 409))
+                return next(new ApiError('Choose a date after today', 409))
             }
             if (toDate < fromDate) {
-                console.log('todate < fromdate');
-                return next(new ApiError('Choose a date after starting date', 409))
+                return next(new ApiError('Choose a date after the starting date', 409))
             }
 
             const str = req.body.description.replaceAll("_", ' ').toLowerCase();
