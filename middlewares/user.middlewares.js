@@ -55,6 +55,24 @@ module.exports = {
         }
     },
 
+    // uniqueNumber: async (req, res, next) => {
+    //     try {
+    //         const {email} = req.body;
+    //         const {user_id} = req.params;
+    //
+    //         const user = await userService.getOneByParams({email, _id: {$ne: user_id}});
+    //
+    //         if (user) {
+    //             return next(new ApiError('This email is already in use', 400));
+    //         }
+    //
+    //         next();
+    //
+    //     } catch (e) {
+    //         next(e)
+    //     }
+    // },
+
 
     getUserDynamically: (from = 'body', fieldName = 'user_id', dbField = fieldName) => async (req, res, next) => {
         try {

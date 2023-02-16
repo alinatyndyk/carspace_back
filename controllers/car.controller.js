@@ -21,6 +21,7 @@ const Stripe = require('stripe')(STRIPE_SECRET_KEY);
 module.exports = {
     getAllCars: async (req, res, next) => {
         try {
+            console.log(req.body);
             const insidesBody = ['location', 'min_rent-time', 'vehicle_type', 'transmission', 'location', 'brand', 'engine_capacity', 'driver_included'] //TODO WRITE ALL PROPS
             const gteInsides = ['no_of_seats', 'fits_bags', 'model_year']
             const lteInsides = ['min_drivers_age'];
@@ -35,9 +36,9 @@ module.exports = {
                 all['price_day_basis'] = {$gt: pricesInsides.min, $lt: pricesInsides.max}
             }
             if (req.query?.company) {
-                all['company'] =  req.query.company;
+                all['company'] = req.query.company;
             }
-            if(req.query.description){
+            if (req.query.description) {
                 const str = req.query.description.replaceAll("_", ' ').toLowerCase();
                 console.log(str, 'str');
                 all['description'] = {$regex: str}
@@ -47,12 +48,12 @@ module.exports = {
                     all[key] = value;
                 } else if (gteInsides.includes(key)) {
                     all[key] = {$gte: value};
-                } else if (ignoreInsides.includes(key)) {
-                    console.log(value, 'value');
                 } else if (lteInsides.includes(key)) {
                     all[key] = {$lte: value};
                 } else {
-                    all[`car_features.${key}`] = value;
+                    if (ignoreInsides.includes(key) === false) {
+                        all[`car_features.${key}`] = value;
+                    }
                 }
             }
             const carsByInsides = await carService.getAllCars(all).skip(skip).limit(2);
@@ -82,7 +83,6 @@ module.exports = {
             const skip = (page - 1) * 2;
 
             const str = req.body.description.replaceAll("_", ' ').toLowerCase();
-            console.log(str, 'str');
             const data = await carService.searchCarByDescription(str).skip(skip).limit(2);
             if (data.length === 0) {
                 return next(new ApiError('No cars found. Try later...', 404))
@@ -93,9 +93,7 @@ module.exports = {
         }
     },
 
-    createCarImg:  (req, res, next) => {
-        console.log(req.files);
-        console.log(req.body);
+    createCarImg: (req, res, next) => {
         upload(req, res, async (err) => {
             const {brand} = req.body;
             const {_id} = req.tokenInfo.company;
@@ -114,7 +112,6 @@ module.exports = {
             } else {
                 let arrAlbum = [];
                 req.files.forEach(file => {
-                    console.log(file, 'iter');
                     const image = {
                         data: file.filename,
                         link: `http://localhost:5000/photos/${file.filename}`
@@ -150,10 +147,8 @@ module.exports = {
             if (_id.toString() !== company_id.toString()) {
                 return next(new ApiError('Access token doesnt belong to the car you are trying to update'))
             }
-            console.log('new car befoer');
 
             const car = await carService.updateCar(car_id, req.body,);
-            console.log('new car afetr');
             res.json(car);
         } catch (e) {
             next(e);

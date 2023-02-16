@@ -35,17 +35,27 @@ module.exports = {
         }
     },
 
-    createUserImg: (req, res) => {
+    createUserImg: (req, res, next) => {
         upload(req, res, async (err) => {
 
             const validate = userValidators.newUserValidator.validate(req.body);
 
             if (validate.error) {
-                console.log('validate error', validate.error.message);
                 return next(new ApiError(validate.error.message, 400))
             }
 
-            const {email, name} = req.body;
+            const {email, contact_number, name} = req.body;
+
+            const numberMatch = await userService.getOneByParams({contact_number});
+            if (numberMatch) {
+                return next(new ApiError('Number has to be unique', 400))
+            }
+
+            const emailMatch = await userService.getOneByParams({email});
+            if (emailMatch) {
+                return next(new ApiError('Email has to be unique', 400))
+            }
+
             const hashPassword = await tokenService.hashPassword(req.body.password);
             await sendEmail(email, CREATE_USER, {userName: name});
             if (!req.file) {

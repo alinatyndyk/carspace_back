@@ -70,7 +70,6 @@ module.exports = {
     logoutUser: async (req, res, next) => {
         try {
             const {user, access_token} = req.tokenInfo;
-            console.log(user);
             await authService.deleteOneUserByParams({user, access_token});
 
             res.json('Logout page');
@@ -141,15 +140,15 @@ module.exports = {
             const {password} = req.body;
             const token = req.get(AUTHORIZATION);
 
-            const prevPass = await previousPasswordService.savePasswordInfo({password: user.password, user: user._id})
+            await previousPasswordService.savePasswordInfo({password: user.password, user: user._id})
 
             await authService.deleteManyByParams({user: user._id});
             await actionTokenService.deleteActionToken({token});
 
             const hashPassword = await tokenService.hashPassword(password);
-            const updatedUser = await userService.updateUser(user._id, {password: hashPassword});
+            await userService.updateUser(user._id, {password: hashPassword});
             await sendEmail(user.email, RESET_PASSWORD, {userName: user.name});
-            res.json({updatedUser, prevPass});
+            res.json('The password was been changed successfully');
         } catch (e) {
             next(e);
         }
