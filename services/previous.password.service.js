@@ -1,4 +1,4 @@
-const {PreviousPasswordUser} = require("../dataBase");
+const {PreviousPasswordUser, PreviousPasswordAdmin} = require("../dataBase");
 const {PreviousPasswordCompany} = require("../dataBase");
 
 
@@ -8,12 +8,20 @@ module.exports = {
         return PreviousPasswordUser.create(oldPassInfo)
     },
 
+    savePasswordInfoAdmin(oldPassInfo) {
+        return PreviousPasswordAdmin.create(oldPassInfo)
+    },
+
     savePasswordInfoCompany(oldPassInfo) {
         return PreviousPasswordCompany.create(oldPassInfo)
     },
 
     getByUserId(userId) {
         return PreviousPasswordUser.find({user: userId}).lean();
+    },
+
+    getByAdminId(adminId) {
+        return PreviousPasswordAdmin.find({admin: adminId}).lean();
     },
 
     getByCompanyId(_id) {

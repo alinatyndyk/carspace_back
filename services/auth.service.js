@@ -17,12 +17,20 @@ module.exports = {
         return AuthCompany.deleteMany(filter);
     },
 
+    deleteManyByParamsAdmin(filter) {
+        return AuthAdmin.deleteMany(filter);
+    },
+
     getAllAuthCompany() {
         return AuthCompany.find();
     },
 
     saveTokensUser(tokens) {
         return AuthUser.create(tokens)
+    },
+
+    saveTokensAdmin(tokens) {
+        return AuthAdmin.create(tokens);
     },
 
     getOneWithUser(filter) {
@@ -35,6 +43,10 @@ module.exports = {
 
     deleteOneUserByParams(filter) {
         return AuthUser.deleteOne(filter);
+    },
+
+    deleteOneAdminByParams(filter) {
+        return AuthAdmin.deleteOne(filter);
     },
 
     getAllAuthUser() {

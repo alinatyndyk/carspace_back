@@ -4,9 +4,9 @@ const {
     actionTokenService,
     previousPasswordService,
     userService,
-    emailService, companyService
+    emailService, companyService, adminService
 } = require("../services");
-const {FORGOT_PASSWORD, FORGOT_PASSWORD_USER, FORGOT_PASSWORD_COMPANY} = require("../constants/token.type.enum");
+const {FORGOT_PASSWORD, FORGOT_PASSWORD_USER, FORGOT_PASSWORD_COMPANY, FORGOT_PASSWORD_ADMIN} = require("../constants/token.type.enum");
 const {AUTHORIZATION} = require("../constants/constants");
 const {sendEmail} = require("../services/email.service");
 const {RESET_PASSWORD} = require("../constants/email.action.enum");
@@ -69,7 +69,7 @@ module.exports = {
 
     logoutUser: async (req, res, next) => {
         try {
-            const {user, access_token} = req.tokenInfo;
+            const {admin, access_token} = req.tokenInfo;
             await authService.deleteOneUserByParams({user, access_token});
 
             res.json('Logout page');
@@ -80,11 +80,51 @@ module.exports = {
 
     refreshUser: async (req, res, next) => {
         try {
-            const {user, refresh_token} = req.tokenInfo;
+            const {admin, refresh_token} = req.tokenInfo;
             await authService.deleteOneUserByParams({refresh_token});
 
             const authTokens = tokenService.createAuthTokensUser({_id: user});
             await authService.saveTokensUser({...authTokens, user});
+
+            res.json(authTokens);
+        } catch (e) {
+            next(e);
+        }
+    },
+
+    loginAdmin: async (req, res, next) => {
+        try {
+            const {password} = req.body;
+            const {password: hashPassword, _id} = req.admin;
+            await tokenService.comparePasswords(password, hashPassword);
+
+            const authTokens = tokenService.createAuthTokensAdmin({_id});
+            await authService.saveTokensAdmin({...authTokens, admin: _id});
+
+            res.json(authTokens);
+        } catch (e) {
+            next(e);
+        }
+    },
+
+    logoutAdmin: async (req, res, next) => {
+        try {
+            const {admin, access_token} = req.tokenInfo;
+            await authService.deleteOneAdminByParams({admin, access_token});
+
+            res.json('Logout page');
+        } catch (e) {
+            next(e);
+        }
+    },
+
+    refreshAdmin: async (req, res, next) => {
+        try {
+            const {admin, refresh_token} = req.tokenInfo;
+            await authService.deleteOneAdminByParams({refresh_token});
+
+            const authTokens = tokenService.createAuthTokensAdmin({_id: admin});
+            await authService.saveTokensAdmin({...authTokens, admin});
 
             res.json(authTokens);
         } catch (e) {
@@ -104,6 +144,29 @@ module.exports = {
             await actionTokenService.createActionToken({
                 tokenType: FORGOT_PASSWORD_USER,
                 user: _id,
+                token: action_token
+            })
+
+            res.send('The letter was sent');
+        } catch (e) {
+            next(e);
+        }
+    },
+
+    forgotPasswordAdmin: async (req, res, next) => {
+        try {
+            console.log(req.admin, '************************');
+            const {_id, email} = req.admin;
+
+            const action_token = tokenService.createActionToken(FORGOT_PASSWORD_ADMIN, {_id});
+            console.log(action_token, '*******************');
+
+            const url = `http://localhost:3000/password-reset?tokenAction=${action_token}`
+
+            await emailService.sendEmail(email, FORGOT_PASSWORD, {url});
+            await actionTokenService.createActionToken({
+                tokenType: FORGOT_PASSWORD_ADMIN,
+                admin: _id,
                 token: action_token
             })
 
@@ -148,6 +211,27 @@ module.exports = {
             const hashPassword = await tokenService.hashPassword(password);
             await userService.updateUser(user._id, {password: hashPassword});
             await sendEmail(user.email, RESET_PASSWORD, {userName: user.name});
+            res.json('The password was been changed successfully');
+        } catch (e) {
+            next(e);
+        }
+
+    },
+
+    setNewPasswordForgotAdmin: async (req, res, next) => {
+        try {
+            const {admin} = req.tokenInfo;
+            const {password} = req.body;
+            const token = req.get(AUTHORIZATION);
+
+            await previousPasswordService.savePasswordInfoAdmin({password: admin.password, admin: admin._id})
+
+            await authService.deleteManyByParamsAdmin({admin: admin._id});
+            await actionTokenService.deleteActionToken({token});
+
+            const hashPassword = await tokenService.hashPassword(password);
+            await adminService.updateAdmin(admin._id, {password: hashPassword});
+            await sendEmail(admin.email, RESET_PASSWORD, {userName: admin.name});
             res.json('The password was been changed successfully');
         } catch (e) {
             next(e);

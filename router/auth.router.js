@@ -1,9 +1,9 @@
 const {Router} = require('express');
 
 const {authController, orderCarController} = require("../controllers");
-const {companyMldwr, authMldwr, userMldwr, commonMldwr} = require("../middlewares");
+const {companyMldwr, authMldwr, userMldwr, commonMldwr, adminMldwr} = require("../middlewares");
 const {authService} = require("../services");
-const {FORGOT_PASSWORD_USER, FORGOT_PASSWORD_COMPANY} = require("../constants/token.type.enum");
+const {FORGOT_PASSWORD_USER, FORGOT_PASSWORD_COMPANY, FORGOT_PASSWORD_ADMIN} = require("../constants/token.type.enum");
 
 const authRouter = Router();
 
@@ -43,6 +43,24 @@ authRouter.post('/company/refresh',
 
 //______________________________________________________________
 
+authRouter.post('/admin/login',
+    userMldwr.userBodyValid('loginUserValidator'),
+    adminMldwr.getAdminDynamically('body', 'email'),
+    authController.loginAdmin
+);
+
+authRouter.post('/admin/logout',
+    authMldwr.isAccessTokenValidAdmin,
+    authController.logoutAdmin
+);
+
+authRouter.post('/admin/refresh',
+    authMldwr.isRefreshTokenValidAdmin,
+    authController.refreshAdmin
+);
+
+//______________________________________________________________
+
 authRouter.post('/password_forgot/user',
     userMldwr.userBodyValid('userEmailValidator'),
     userMldwr.getUserDynamically('body', 'email'),
@@ -53,6 +71,18 @@ authRouter.put('/password_reset/user',
     authMldwr.isActionTokenValid(FORGOT_PASSWORD_USER),
     authMldwr.checkPreviousPasswordUser,
     authController.setNewPasswordForgotUser);
+
+authRouter.post('/password_forgot/admin',
+    userMldwr.userBodyValid('userEmailValidator'),
+    adminMldwr.getAdminDynamically('body', 'email'),
+    authController.forgotPasswordAdmin);
+
+authRouter.put('/password_reset/admin',
+    commonMldwr.isBodyValid('PasswordValidator'),
+    authMldwr.isActionTokenValid(FORGOT_PASSWORD_ADMIN),
+    authMldwr.checkPreviousPasswordAdmin,
+    authController.setNewPasswordForgotAdmin);
+
 
 authRouter.post('/password_forgot/company',
     commonMldwr.isBodyValid('NumberValidator'),

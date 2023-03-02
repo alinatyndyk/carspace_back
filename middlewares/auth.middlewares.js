@@ -6,7 +6,8 @@ const {
     REFRESH_COMPANY,
     ACCESS_USER,
     REFRESH_USER,
-    FORGOT_PASSWORD_COMPANY, FORGOT_PASSWORD_USER
+    FORGOT_PASSWORD_COMPANY, FORGOT_PASSWORD_USER, VERIFICATION_STRING, ACCESS_ADMIN, REFRESH_ADMIN,
+    FORGOT_PASSWORD_ADMIN
 } = require("../constants/token.type.enum");
 
 module.exports = {
@@ -102,6 +103,64 @@ module.exports = {
         }
     },
 
+    isAccessTokenValidAdmin: async (req, res, next) => {
+        try {
+            const access_token = req.get(ACCESS_TOKEN);
+            if (!access_token) {
+                return next(new ApiError('You are unauthorized. No access token for admin', 401))
+            }
+            tokenService.checkToken(access_token, ACCESS_ADMIN);
+
+            const tokenInfo = await authService.getOneWithAdmin({access_token});
+
+            if (!tokenInfo) {
+                return next(new ApiError('No valid token for admin', 401))
+            }
+
+            req.tokenInfo = tokenInfo;
+            next();
+        } catch (e) {
+            next(e)
+        }
+    },
+
+    isRefreshTokenValidAdmin: async (req, res, next) => {
+        try {
+            const refresh_token = req.get(REFRESH_TOKEN);
+            if (!refresh_token) {
+                return next(new ApiError('You are unauthorized. No refresh token for admin', 401))
+            }
+
+            tokenService.checkToken(refresh_token, REFRESH_ADMIN);
+
+            const tokenInfo = await authService.getOneWithAdmin({refresh_token});
+
+            if (!tokenInfo) {
+                return next(new ApiError('No valid refresh token for admin', 401));
+            }
+
+            req.tokenInfo = tokenInfo;
+            next();
+
+        } catch (e) {
+            next(e)
+        }
+    },
+
+    isVerificationStringValid: async (req, res, next) => {
+        try {
+            const str = req.get(VERIFICATION_STRING);
+            if (!str) {
+                return next(new ApiError('No verification string', 401))
+            }
+            tokenService.checkToken(str, VERIFICATION_STRING);
+
+            next();
+        } catch (e) {
+            next(e)
+        }
+    },
+
     isActionTokenValid: (tokenType) => async (req, res, next) => {
         try {
             const token = req.get(AUTHORIZATION);
@@ -115,6 +174,8 @@ module.exports = {
                 tokenInfo = await actionTokenService.getOneBySearchParamsWithCompany({tokenType, token})
             } else if (tokenType === FORGOT_PASSWORD_USER) {
                 tokenInfo = await actionTokenService.getOneBySearchParamsWithUser({tokenType, token});
+            } else if (tokenType === FORGOT_PASSWORD_ADMIN) {
+                tokenInfo = await actionTokenService.getOneBySearchParamsWithAdmin({tokenType, token});
             }
 
             if (!tokenInfo) {
@@ -150,6 +211,27 @@ module.exports = {
         }
     },
 
+    checkPreviousPasswordAdmin: async (req, res, next) => {
+        try {
+            const {admin} = req.tokenInfo;
+            const {password} = req.body;
+            const oldPasswords = await previousPasswordService.getByAdminId(req.tokenInfo._id);
+
+            const promises = await Promise.allSettled([...oldPasswords.map(old => tokenService.comparePasswords(password, old.password)),
+                tokenService.comparePasswords(password, admin.password)]);
+
+            for (const {status} of promises) {
+                if (status === 'fulfilled') {
+                    return next(new ApiError('Choose a new password', 400))
+                }
+            }
+
+            next();
+        } catch (e) {
+            next(e)
+        }
+    },
+
     checkPreviousPasswordCompany: async (req, res, next) => {
         try {
             const {company} = req.tokenInfo;
@@ -169,5 +251,5 @@ module.exports = {
         } catch (e) {
             next(e)
         }
-    },
+    }
 }

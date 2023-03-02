@@ -10,6 +10,10 @@ const actionTokensSchema = new Schema({
     company: {
         type: Schema.Types.ObjectId,
         ref: 'company'
+    },
+    admin: {
+        type: Schema.Types.ObjectId,
+        ref: 'admin'
     }
 }, {
     timestamps: true

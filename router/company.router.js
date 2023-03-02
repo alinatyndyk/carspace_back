@@ -15,7 +15,7 @@ companyRouter.get('/:company_id',
     companyController.getCompanyById); // everyone
 
 companyRouter.post('/',
-    //access admin
+    authMldwr.isAccessTokenValidAdmin,
     companyController.createCompanyImg); //only admin
 
 companyRouter.patch('/:company_id',
@@ -26,7 +26,7 @@ companyRouter.patch('/:company_id',
 
 companyRouter.delete('/:company_id',
     commonMldwr.validIdMldwr('company_id', 'params'),
-    //access admin
+    authMldwr.isAccessTokenValidAdmin,
     companyController.deleteCompany); //only admin
 
 companyRouter.delete('/', async (req, res) => {
