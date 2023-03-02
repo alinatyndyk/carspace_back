@@ -1,7 +1,5 @@
 const {ApiError} = require("../errors");
-const {userService, tokenService, adminService} = require("../services");
-const {userValidators} = require("../validators");
-const {isAdminTokenValid} = require("./auth.middlewares");
+const {adminService} = require("../services");
 
 module.exports = {
     isAdminPresent: (from = 'params') => async (req, res, next) => {

@@ -69,7 +69,7 @@ module.exports = {
 
     logoutUser: async (req, res, next) => {
         try {
-            const {admin, access_token} = req.tokenInfo;
+            const {user, access_token} = req.tokenInfo;
             await authService.deleteOneUserByParams({user, access_token});
 
             res.json('Logout page');
@@ -80,7 +80,7 @@ module.exports = {
 
     refreshUser: async (req, res, next) => {
         try {
-            const {admin, refresh_token} = req.tokenInfo;
+            const {user, refresh_token} = req.tokenInfo;
             await authService.deleteOneUserByParams({refresh_token});
 
             const authTokens = tokenService.createAuthTokensUser({_id: user});
@@ -155,11 +155,9 @@ module.exports = {
 
     forgotPasswordAdmin: async (req, res, next) => {
         try {
-            console.log(req.admin, '************************');
             const {_id, email} = req.admin;
 
             const action_token = tokenService.createActionToken(FORGOT_PASSWORD_ADMIN, {_id});
-            console.log(action_token, '*******************');
 
             const url = `http://localhost:3000/password-reset?tokenAction=${action_token}`
 
