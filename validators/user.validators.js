@@ -7,7 +7,7 @@ const nameValidator = Joi.string().alphanum().min(2).max(35).trim().error(new Ap
 const lastnameValidator = Joi.string().alphanum().min(2).max(35).trim();
 const ageValidator = Joi.number().integer().min(18).max(120);
 const emailValidator = Joi.string().regex(EMAIL).lowercase().trim().error(new ApiError('Email not valid', 400));
-const passValidator = Joi.string().regex(PASSWORD).error(new ApiError('Password not valid'));
+const passValidator = Joi.string().regex(PASSWORD).error(new ApiError('Password not valid (Accepts the letters and numbers with minimum 8 lengths)'));
 const numberValidator = Joi.string().regex(NUMBER).error(new ApiError('Number not valid', 400))
 const imageValidator = Joi.any()
 

@@ -147,7 +147,6 @@ module.exports = {
             }
             return jwt.verify(cut, word);
         } catch (e) {
-            console.log(e);
             if (e.message === 'jwt expired') {
                 throw new ApiError(`Token not valid. ${e.message}`, 401);
             } else {

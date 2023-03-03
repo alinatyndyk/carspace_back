@@ -9,6 +9,7 @@ const {
     FORGOT_PASSWORD_COMPANY, FORGOT_PASSWORD_USER, VERIFICATION_STRING, ACCESS_ADMIN, REFRESH_ADMIN,
     FORGOT_PASSWORD_ADMIN
 } = require("../constants/token.type.enum");
+const decodeJWT = require('jwt-decode');
 
 module.exports = {
     isAccessTokenValidCompany: async (req, res, next) => {
@@ -72,7 +73,6 @@ module.exports = {
             }
 
             req.tokenInfo = tokenInfo;
-            console.log(tokenInfo.user, 'token user');
             next();
         } catch (e) {
             next(e)
@@ -117,7 +117,49 @@ module.exports = {
                 return next(new ApiError('No valid token for admin', 401))
             }
 
+
             req.tokenInfo = tokenInfo;
+            next();
+        } catch (e) {
+            next(e)
+        }
+    },
+
+    isAccessTokenValidAdminOrUser: async (req, res, next) => {
+        try {
+            const {user_id} = req.params;
+            const access_token = req.get(ACCESS_TOKEN);
+
+            if (!access_token) {
+                return next(new ApiError('You are unauthorized. No access token for admin or user', 401))
+            }
+
+            const cut = access_token.substr(access_token.indexOf(" ") + 1);
+
+            const decoded = decodeJWT(cut);
+
+            let tokenInfo;
+
+            if (decoded._id !== user_id) {
+                tokenService.checkToken(access_token, ACCESS_ADMIN);
+
+                tokenInfo = await authService.getOneWithAdmin({access_token});
+                if (!tokenInfo) {
+                    return next(new ApiError('No valid token for admin', 401))
+                }
+
+            } else {
+                tokenService.checkToken(access_token, ACCESS_USER);
+
+                tokenInfo = await authService.getOneWithUser({access_token});
+                if (!tokenInfo) {
+                    return next(new ApiError('No valid token for user', 401))
+                }
+
+            }
+
+            req.tokenInfo = tokenInfo;
+
             next();
         } catch (e) {
             next(e)

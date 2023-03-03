@@ -24,7 +24,7 @@ userRouter.get('/',
 userRouter.get('/:user_id',
     commonMldwr.validIdMldwr('user_id', 'params'),
     userMldwr.isUserPresent(),
-    authMldwr.isAccessTokenValidAdmin,
+    authMldwr.isAccessTokenValidAdminOrUser,
     userController.getUserById); // only admin
 
 userRouter.post('/', createUserImg);
