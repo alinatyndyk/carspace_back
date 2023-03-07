@@ -1,5 +1,6 @@
 const {brandService} = require("../services");
 const {regexBrandPush, regexBrandSlice} = require("../constants/car.valid");
+const {ApiError} = require("../errors");
 module.exports = {
     getAllBrands: async (req, res, next) => {
         try {
@@ -24,7 +25,11 @@ module.exports = {
         try {
             const {brand: carBrand} = req.body;
             const brand_db = carBrand.replace(/\s/g, '_');
-            const brand = await brandService.createBrand({...req.body, brand_db});
+            const brands = await brandService.getOneByParams({brand: carBrand.toUpperCase()});
+            if(brands){
+                throw new ApiError('This brand already exists', 400)
+            }
+            const brand = await brandService.createBrand({brand: carBrand.toUpperCase(), brand_db});
             await regexBrandPush(carBrand);
             res.json(brand);
         } catch (e) {

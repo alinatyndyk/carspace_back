@@ -14,7 +14,7 @@ const {
 } = require("../constants/token.type.enum");
 const {AUTHORIZATION} = require("../constants/constants");
 const {sendEmail} = require("../services/email.service");
-const {RESET_PASSWORD, CREATE_USER} = require("../constants/email.action.enum");
+const {RESET_PASSWORD, CREATE_USER, VERIFY_ADMIN} = require("../constants/email.action.enum");
 
 module.exports = {
     loginCompany: async (req, res, next) => {
@@ -280,10 +280,15 @@ module.exports = {
     },
 
     createAdminVerify: async (req, res) => {
+        try{
         const {email} = req.body;
-        const verification_string = await tokenService.createVerificationString({email});
+            console.log(email);
+            const verification_string = await tokenService.createVerificationString({email});
         const httpString = `http://localhost:3000/register?adminVerify=${verification_string}`
-        await sendEmail(email, CREATE_USER, {httpString});
+        await sendEmail(email, VERIFY_ADMIN, {httpString});
         res.json('The verification code was sent');
+        } catch (e) {
+            console.log(e);
+        }
     },
 }

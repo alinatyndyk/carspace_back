@@ -51,6 +51,6 @@ module.exports = {
 
     [VERIFY_ADMIN]: {
         subject: 'VERIFY ADMIN SUBJECT',
-        templateName: 'verify_admin'
+        templateName: 'verify-code'
     },
 }

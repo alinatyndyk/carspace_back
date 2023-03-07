@@ -6,7 +6,6 @@ const {User} = require("../dataBase");
 const multer = require('multer');
 const decodeJWT = require('jwt-decode');
 const {userValidators} = require("../validators");
-const {authMldwr} = require("../middlewares");
 const {VERIFICATION_STRING} = require("../constants/token.type.enum");
 const {ADMIN_SECRET_KEY} = require("../configs/configs");
 
@@ -43,7 +42,7 @@ module.exports = {
         upload(req, res, async (err) => {
 
             const str = req.get(VERIFICATION_STRING);
-            const {email, contact_number} = req.body;
+            const {email, contact_number, name} = req.body;
 
             try {
                 if (req.body.status === 'admin') {
@@ -82,7 +81,7 @@ module.exports = {
 
             const hashPassword = await tokenService.hashPassword(req.body.password);
 
-            // await sendEmail(email, CREATE_USER, {userName: name}); //TODO RENEW EMSIL SEND
+            await sendEmail(email, CREATE_USER, {userName: name});
 
             if (!req.file) {
                 return next(new ApiError('Upload at least one picture', 400));
