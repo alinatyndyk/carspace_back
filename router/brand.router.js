@@ -1,7 +1,7 @@
 const {Router} = require('express');
 
 const {brandController} = require("../controllers");
-const {commonMldwr} = require("../middlewares");
+const {commonMldwr, authMldwr} = require("../middlewares");
 
 const brandRouter = Router();
 
@@ -13,10 +13,12 @@ brandRouter.get('/:brand_id',
     brandController.getBrandById); //everyone
 
 brandRouter.post('/',
+    authMldwr.isAccessTokenValidAdmin,
     brandController.createBrand);
 
 brandRouter.delete('/:brand_id',
     commonMldwr.validIdMldwr('brand_id', 'params'),
+    authMldwr.isAccessTokenValidAdmin,
     brandController.deleteBrand);
 
 module.exports = brandRouter;

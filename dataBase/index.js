@@ -1,12 +1,10 @@
 module.exports = {
     User: require('./User'),
-    Admin: require('./Admin'),
     Car: require('./Car'),
     Company: require('./Company'),
     Brand: require('./Brand'),
     AuthCompany: require('./AuthCompany'),
     AuthUser: require('./AuthUser'),
-    AuthAdmin: require('./AuthAdmin'),
     ActionTokens: require('./ActionTokens'),
     OrderCar: require('./OrderCar'),
     PreviousPasswordUser: require('./PreviousPaswordUser'),

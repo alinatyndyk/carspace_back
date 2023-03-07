@@ -1,6 +1,6 @@
 const {
     WELCOME, FORGOT_PASSWORD, DELETE_USER, CREATE_USER, COMPANY_CREATE, ORDER_CREATION, ORDER_CANCEL,
-    ORDER_TODAY, RESET_PASSWORD
+    ORDER_TODAY, RESET_PASSWORD, VERIFY_ADMIN
 } = require("../constants/email.action.enum");
 
 module.exports = {
@@ -47,5 +47,10 @@ module.exports = {
     [ORDER_TODAY]: {
         subject: 'ORDER TODAY SUBJECT',
         templateName: 'order-today'
+    },
+
+    [VERIFY_ADMIN]: {
+        subject: 'VERIFY ADMIN SUBJECT',
+        templateName: 'verify_admin'
     },
 }

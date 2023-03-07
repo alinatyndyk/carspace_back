@@ -39,12 +39,12 @@ carRouter.post('/search/description',
     carController.searchCarByDescription
 )
 
-carRouter.delete('/', async (req, res) => {
+carRouter.delete('/', authMldwr.isAccessTokenValidAdmin, async (req, res) => {
     const result = await carService.deleteCars(); // for admin
     res.json(result);
 });
 
-carRouter.delete('/delete/orders', async (req, res) => {
+carRouter.delete('/delete/orders', authMldwr.isAccessTokenValidAdmin, async (req, res) => {
     const result = await orderCarService.deleteCarOrders(); // for admin
     res.json(result);
 });

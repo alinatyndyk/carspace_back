@@ -3,6 +3,5 @@ module.exports = {
     authMldwr: require('./auth.middlewares'),
     carMldwr: require('./car.middlewares'),
     userMldwr: require('./user.middlewares'),
-    adminMldwr: require('./admin.middlewares'),
     commonMldwr: require('./common.middlewares'),
 }

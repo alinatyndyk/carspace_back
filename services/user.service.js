@@ -13,6 +13,10 @@ module.exports = {
         return User.findOne(filter);
     },
 
+    createUser(object) {
+        return User.create(object);
+    },
+
     updateUser(_id, userObject) {
         return User.findByIdAndUpdate(_id, userObject, {new: true})
     },

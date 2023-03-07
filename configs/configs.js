@@ -25,6 +25,7 @@ module.exports = {
     NO_REPLY_EMAIL: process.env.NO_REPLY_EMAIL || 'alinatyndyk777@gmail.com',
     NO_REPLY_PASSWORD: process.env.NO_REPLY_PASSWORD || 'evutrdewpnrsuqqh',
 
+    ADMIN_SECRET_KEY: process.env.ADMIN_SECRET_KEY,
     FRONTEND_URL: process.env.FRONTEND_URL || 'google.com',
     ACTION_TOKEN_SECRET: process.env.ACTION_TOKEN_WORD || 'ACTION_TOKEN'
 }

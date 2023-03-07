@@ -1,6 +1,6 @@
 const {Router} = require('express');
 const {userController} = require("../controllers");
-const {userMldwr, commonMldwr, authMldwr} = require("../middlewares");
+const {userMldwr, commonMldwr, authMldwr, adminMldwr} = require("../middlewares");
 const {userService} = require("../services");
 const multer = require('multer');
 const {createUserImg} = require("../controllers/user.controller");
@@ -27,7 +27,8 @@ userRouter.get('/:user_id',
     authMldwr.isAccessTokenValidAdminOrUser,
     userController.getUserById); // only admin
 
-userRouter.post('/', createUserImg);
+userRouter.post('/',
+    createUserImg);
 
 userRouter.patch('/:user_id',
     commonMldwr.validIdMldwr('user_id', 'params'),
@@ -44,7 +45,7 @@ userRouter.delete('/:user_id',
     userController.deleteUser); //only with a users token --done
 
 
-userRouter.delete('/', async (req, res) => {
+userRouter.delete('/', authMldwr.isAccessTokenValidAdmin, async (req, res) => {
     await userService.deleteUsers();
     res.send('Users are empty');
 })

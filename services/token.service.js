@@ -157,12 +157,10 @@ module.exports = {
 
     verifyOrderToken: async (order) => {
         try {
-            console.log('try -------------------------------')
             return jwt.verify(order.car_token, ORDER_CAR_WORD);
         } catch (e) {
             console.log(e.message);
             if (e.message === 'jwt expired') {
-                console.log('catch if jwt expired ---------------------------------')
                 const deletedOrder = await orderCarService.deleteCarOrderById(order._id);
                 return deletedOrder
             }

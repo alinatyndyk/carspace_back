@@ -6,10 +6,15 @@ const {
     userService,
     emailService, companyService, adminService
 } = require("../services");
-const {FORGOT_PASSWORD, FORGOT_PASSWORD_USER, FORGOT_PASSWORD_COMPANY, FORGOT_PASSWORD_ADMIN} = require("../constants/token.type.enum");
+const {
+    FORGOT_PASSWORD,
+    FORGOT_PASSWORD_USER,
+    FORGOT_PASSWORD_COMPANY,
+    FORGOT_PASSWORD_ADMIN
+} = require("../constants/token.type.enum");
 const {AUTHORIZATION} = require("../constants/constants");
 const {sendEmail} = require("../services/email.service");
-const {RESET_PASSWORD} = require("../constants/email.action.enum");
+const {RESET_PASSWORD, CREATE_USER} = require("../constants/email.action.enum");
 
 module.exports = {
     loginCompany: async (req, res, next) => {
@@ -56,9 +61,16 @@ module.exports = {
         try {
             const {password} = req.body;
             const {password: hashPassword, _id} = req.user;
+
             await tokenService.comparePasswords(password, hashPassword);
 
-            const authTokens = tokenService.createAuthTokensUser({_id});
+            let authTokens;
+            if (req.user?.status === 'admin') {
+                authTokens = tokenService.createAuthTokensAdmin({_id, status: 'admin'});
+            } else {
+                authTokens = tokenService.createAuthTokensUser({_id});
+            }
+
             await authService.saveTokensUser({...authTokens, user: _id});
 
             res.json(authTokens);
@@ -83,7 +95,13 @@ module.exports = {
             const {user, refresh_token} = req.tokenInfo;
             await authService.deleteOneUserByParams({refresh_token});
 
-            const authTokens = tokenService.createAuthTokensUser({_id: user});
+            let authTokens;
+            if (user?.status === 'admin') {
+                authTokens = tokenService.createAuthTokensAdmin({_id: user._id, status: 'admin'});
+            } else {
+                authTokens = tokenService.createAuthTokensUser({_id: user._id});
+            }
+
             await authService.saveTokensUser({...authTokens, user});
 
             res.json(authTokens);
@@ -259,5 +277,13 @@ module.exports = {
             next(e);
         }
 
-    }
+    },
+
+    createAdminVerify: async (req, res) => {
+        const {email} = req.body;
+        const verification_string = await tokenService.createVerificationString({email});
+        const httpString = `http://localhost:3000/register?adminVerify=${verification_string}`
+        await sendEmail(email, CREATE_USER, {httpString});
+        res.json('The verification code was sent');
+    },
 }

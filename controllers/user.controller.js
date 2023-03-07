@@ -4,7 +4,11 @@ const {DELETE_USER, CREATE_USER} = require("../constants/email.action.enum");
 const {sendEmail} = require("../services/email.service");
 const {User} = require("../dataBase");
 const multer = require('multer');
+const decodeJWT = require('jwt-decode');
 const {userValidators} = require("../validators");
+const {authMldwr} = require("../middlewares");
+const {VERIFICATION_STRING} = require("../constants/token.type.enum");
+const {ADMIN_SECRET_KEY} = require("../configs/configs");
 
 const storage = multer.diskStorage({
     destination: 'Images',
@@ -35,8 +39,28 @@ module.exports = {
         }
     },
 
-    createUserImg: (req, res, next) => {
+    createUserImg: async (req, res, next) => {
         upload(req, res, async (err) => {
+
+            const str = req.get(VERIFICATION_STRING);
+            const {email, contact_number} = req.body;
+
+            try {
+                if (req.body.status === 'admin') {
+                    if (str !== ADMIN_SECRET_KEY) {
+                        tokenService.checkToken(str, VERIFICATION_STRING);
+
+                        const cut = str.substr(str.indexOf(" ") + 1);
+                        const decoded = decodeJWT(cut);
+
+                        if(email !== decoded.email){
+                            throw new ApiError('The code does not belong to this address', 400)
+                        }
+                    }
+                }
+            } catch (e) {
+                next(e);
+            }
 
             const validate = userValidators.newUserValidator.validate(req.body);
 
@@ -44,7 +68,7 @@ module.exports = {
                 return next(new ApiError(validate.error.message, 400))
             }
 
-            const {email, contact_number, name} = req.body;
+
 
             const numberMatch = await userService.getOneByParams({contact_number});
             if (numberMatch) {
@@ -57,10 +81,14 @@ module.exports = {
             }
 
             const hashPassword = await tokenService.hashPassword(req.body.password);
-            await sendEmail(email, CREATE_USER, {userName: name});
+
+            // await sendEmail(email, CREATE_USER, {userName: name}); //TODO RENEW EMSIL SEND
+
             if (!req.file) {
-                return next(new ApiError('Upload at least one picture', 400))
+                return next(new ApiError('Upload at least one picture', 400));
+
             } else {
+
                 const newImage = new User({
                     ...req.body, password: hashPassword,
                     image: {

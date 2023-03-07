@@ -10,7 +10,7 @@ require('dotenv').config()
 
 const carRouter = require('./router/car.router')
 const {PORT, MONGO_URL} = require("./configs/configs");
-const {userRouter, companyRouter, authRouter, brandRouter, adminRouter} = require("./router");
+const {userRouter, companyRouter, authRouter, brandRouter} = require("./router");
 const {mainErrorHandler} = require("./errors")
 const runCronJobs = require('./cron/cron');
 const {regexBrand} = require("./constants/car.valid");
@@ -22,14 +22,9 @@ app.use(express.static("public"));
 mongoose.set('strictQuery', false);
 
 app.use(cors(corsOptions));
-app.get('/', (req, res) => {
-    console.log('REQUEST PROCESSED');
-    res.json('HELLO WORLD')
-})
 
 app.use('/cars', carRouter)
 app.use('/users', userRouter)
-app.use('/admins', adminRouter)
 app.use('/companies', companyRouter)
 app.use('/brands', brandRouter)
 app.use('/auth', authRouter)

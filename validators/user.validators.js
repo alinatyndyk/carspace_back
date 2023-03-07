@@ -20,7 +20,6 @@ const newUserValidator = Joi.object({
     status: Joi.string(),
     password: passValidator.required(),
     testImage: imageValidator
-
 })
 
 const updateUserValidator = Joi.object({

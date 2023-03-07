@@ -10,6 +10,7 @@ const {
     FORGOT_PASSWORD_ADMIN
 } = require("../constants/token.type.enum");
 const decodeJWT = require('jwt-decode');
+const {ADMIN_SECRET_KEY} = require("../configs/configs");
 
 module.exports = {
     isAccessTokenValidCompany: async (req, res, next) => {
@@ -64,7 +65,15 @@ module.exports = {
             if (!access_token) {
                 return next(new ApiError('You are unauthorized. No access token for user', 401))
             }
-            tokenService.checkToken(access_token, ACCESS_USER);
+
+            const first = access_token.split(' ')[0];
+            if (first === 'Admin') {
+                tokenService.checkToken(access_token, ACCESS_ADMIN);
+                console.log('inadmin');
+            } else {
+                tokenService.checkToken(access_token, ACCESS_USER);
+                console.log('user');
+            }
 
             const tokenInfo = await authService.getOneWithUser({access_token});
 
@@ -85,8 +94,13 @@ module.exports = {
             if (!refresh_token) {
                 return next(new ApiError('You are unauthorized. No refresh token for user', 401))
             }
+            const first = refresh_token.split(' ')[0];
+            if (first === 'Admin') {
+                tokenService.checkToken(refresh_token, REFRESH_ADMIN);
+            } else {
+                tokenService.checkToken(refresh_token, REFRESH_USER);
+            }
 
-            tokenService.checkToken(refresh_token, REFRESH_USER);
 
             const tokenInfo = await authService.getOneWithUser({refresh_token});
 
@@ -111,7 +125,7 @@ module.exports = {
             }
             tokenService.checkToken(access_token, ACCESS_ADMIN);
 
-            const tokenInfo = await authService.getOneWithAdmin({access_token});
+            const tokenInfo = await authService.getOneWithUser({access_token});
 
             if (!tokenInfo) {
                 return next(new ApiError('No valid token for admin', 401))
@@ -140,18 +154,22 @@ module.exports = {
 
             let tokenInfo;
 
-            if (decoded._id !== user_id) {
+            if (decoded._id !== user_id  || decoded?.status === 'admin') {
+
                 tokenService.checkToken(access_token, ACCESS_ADMIN);
 
-                tokenInfo = await authService.getOneWithAdmin({access_token});
+                tokenInfo = await authService.getOneWithUser({access_token});
+
                 if (!tokenInfo) {
                     return next(new ApiError('No valid token for admin', 401))
                 }
 
             } else {
+
                 tokenService.checkToken(access_token, ACCESS_USER);
 
                 tokenInfo = await authService.getOneWithUser({access_token});
+
                 if (!tokenInfo) {
                     return next(new ApiError('No valid token for user', 401))
                 }
@@ -192,10 +210,12 @@ module.exports = {
     isVerificationStringValid: async (req, res, next) => {
         try {
             const str = req.get(VERIFICATION_STRING);
-            if (!str) {
-                return next(new ApiError('No verification string', 401))
+
+            if (req.body.status === 'admin') {
+                if (str !== ADMIN_SECRET_KEY) {
+                    tokenService.checkToken(str, VERIFICATION_STRING);
+                }
             }
-            tokenService.checkToken(str, VERIFICATION_STRING);
 
             next();
         } catch (e) {

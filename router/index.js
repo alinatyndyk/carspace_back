@@ -4,5 +4,4 @@ module.exports = {
     companyRouter: require('./company.router'),
     authRouter: require('./auth.router'),
     brandRouter: require('./brand.router'),
-    adminRouter: require('./admin.router')
 }

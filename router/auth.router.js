@@ -1,6 +1,6 @@
 const {Router} = require('express');
 
-const {authController, orderCarController} = require("../controllers");
+const {authController, orderCarController, adminController} = require("../controllers");
 const {companyMldwr, authMldwr, userMldwr, commonMldwr, adminMldwr} = require("../middlewares");
 const {authService} = require("../services");
 const {FORGOT_PASSWORD_USER, FORGOT_PASSWORD_COMPANY, FORGOT_PASSWORD_ADMIN} = require("../constants/token.type.enum");
@@ -43,24 +43,6 @@ authRouter.post('/company/refresh',
 
 //______________________________________________________________
 
-authRouter.post('/admin/login',
-    userMldwr.userBodyValid('loginUserValidator'),
-    adminMldwr.getAdminDynamically('body', 'email'),
-    authController.loginAdmin
-);
-
-authRouter.post('/admin/logout',
-    authMldwr.isAccessTokenValidAdmin,
-    authController.logoutAdmin
-);
-
-authRouter.post('/admin/refresh',
-    authMldwr.isRefreshTokenValidAdmin,
-    authController.refreshAdmin
-);
-
-//______________________________________________________________
-
 authRouter.post('/password_forgot/user',
     userMldwr.userBodyValid('userEmailValidator'),
     userMldwr.getUserDynamically('body', 'email'),
@@ -71,17 +53,6 @@ authRouter.put('/password_reset/user',
     authMldwr.isActionTokenValid(FORGOT_PASSWORD_USER),
     authMldwr.checkPreviousPasswordUser,
     authController.setNewPasswordForgotUser);
-
-authRouter.post('/password_forgot/admin',
-    userMldwr.userBodyValid('userEmailValidator'),
-    adminMldwr.getAdminDynamically('body', 'email'),
-    authController.forgotPasswordAdmin);
-
-authRouter.put('/password_reset/admin',
-    commonMldwr.isBodyValid('PasswordValidator'),
-    authMldwr.isActionTokenValid(FORGOT_PASSWORD_ADMIN),
-    authMldwr.checkPreviousPasswordAdmin,
-    authController.setNewPasswordForgotAdmin);
 
 
 authRouter.post('/password_forgot/company',
@@ -102,18 +73,20 @@ authRouter.get('/company', async (req, res) => {
     res.json(result);
 });
 
-authRouter.get('/user', async (req, res) => {
+authRouter.get('/user', authMldwr.isAccessTokenValidAdmin, async (req, res) => {
     const result = await authService.getAllAuthUser(); // for admin
     res.json(result);
 }); //todo remove
 
 //_______________________________________________________________
 
-authRouter.get('/orders/all', //for admin
+authRouter.get('/orders/all',
+    authMldwr.isAccessTokenValidAdmin, //for admin
     orderCarController.getAllOrders
 );
 
 authRouter.delete('/orders/delete',
+    authMldwr.isAccessTokenValidAdmin,
     orderCarController.deleteAllOrders
 ); // for admin
 
@@ -147,6 +120,13 @@ authRouter.get('/company-orders/:order_id', // only for user --done
 authRouter.delete('/orders/:order_id', // only for user --done
     authMldwr.isAccessTokenValidUser,
     orderCarController.deleteUserOrderById
+);
+
+authRouter.post('/verify/admin',
+    userMldwr.userBodyValid('userEmailValidator'),
+    userMldwr.uniqueUserEmail,
+    authMldwr.isAccessTokenValidAdmin,
+    authController.createAdminVerify,
 );
 
 module.exports = authRouter;
