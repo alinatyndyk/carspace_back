@@ -5,7 +5,7 @@ const {ApiError} = require("../errors");
 
 const nameValidator = Joi.string().alphanum().min(2).max(30).trim();
 const numberValidator = Joi.string().regex(NUMBER).error(new ApiError('Number not valid', 400))
-const passValidator = Joi.string().regex(PASSWORD).error(new ApiError('Password not valid'));
+const passValidator = Joi.string().regex(PASSWORD).error(new ApiError('Password not valid (Accepts the letters and numbers with minimum 8 lengths)'));
 const emailValidator = Joi.string().regex(EMAIL).lowercase().trim().error(new ApiError('Email not valid', 400));
 const descriptionValidator = Joi.string().min(10).trim();
 const imageValidator = Joi.any();

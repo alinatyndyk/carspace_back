@@ -21,7 +21,6 @@ const Stripe = require('stripe')(STRIPE_SECRET_KEY);
 module.exports = {
     getAllCars: async (req, res, next) => {
         try {
-            console.log(req.body);
             const insidesBody = ['location', 'min_rent-time', 'vehicle_type', 'transmission', 'location', 'brand', 'engine_capacity', 'driver_included'] //TODO WRITE ALL PROPS
             const gteInsides = ['no_of_seats', 'fits_bags', 'model_year']
             const lteInsides = ['min_drivers_age'];
@@ -40,7 +39,6 @@ module.exports = {
             }
             if (req.query.description) {
                 const str = req.query.description.replaceAll("_", ' ').toLowerCase();
-                console.log(str, 'str');
                 all['description'] = {$regex: str}
             }
             for (const [key, value] of Object.entries(req.query)) {
