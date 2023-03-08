@@ -22,6 +22,10 @@ module.exports = {
         return Company.findByIdAndDelete(id);
     },
 
+    deleteCompanyByParams({filter}){
+        return Company.deleteOne(filter);
+    },
+
     deleteCompanies(filter = {}){
         return Company.deleteMany(filter);
     },

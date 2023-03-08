@@ -1,4 +1,4 @@
-const {companyService, tokenService} = require("../services");
+const {companyService, tokenService, carService} = require("../services");
 const {ApiError} = require("../errors");
 const {sendEmail} = require("../services/email.service");
 const {COMPANY_CREATE} = require("../constants/email.action.enum");
@@ -93,6 +93,7 @@ module.exports = {
         try {
             const {company_id} = req.params;
             const company = await companyService.deleteCompany(company_id);
+            await carService.deleteCars({company: company_id});
             res.json(company);
         } catch (e) {
             next(e);
