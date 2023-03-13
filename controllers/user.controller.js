@@ -44,30 +44,27 @@ module.exports = {
             const str = req.get(VERIFICATION_STRING);
             const {email, contact_number, name} = req.body;
 
-            try {
-                if (req.body.status === 'admin') {
-                    if (str !== ADMIN_SECRET_KEY) {
-                        tokenService.checkToken(str, VERIFICATION_STRING);
-
-                        const cut = str.substr(str.indexOf(" ") + 1);
-                        const decoded = decodeJWT(cut);
-
-                        if(email !== decoded.email){
-                            throw new ApiError('The code does not belong to this address', 400)
-                        }
-                    }
-                }
-            } catch (e) {
-                next(e);
-            }
-
             const validate = userValidators.newUserValidator.validate(req.body);
 
             if (validate.error) {
                 return next(new ApiError(validate.error.message, 400))
             }
 
+            try {
+                if (str !== ADMIN_SECRET_KEY) {
+                    tokenService.checkToken(str, VERIFICATION_STRING);
 
+                    const cut = str.substr(str.indexOf(" ") + 1);
+                    const decoded = decodeJWT(cut);
+
+                    if (email !== decoded.email) {
+                        throw new ApiError('The code does not belong to this address', 400)
+                    }
+                }
+            } catch (e) {
+                next(e);
+            }
+            console.log('str68');
 
             const numberMatch = await userService.getOneByParams({contact_number});
             if (numberMatch) {
@@ -83,18 +80,18 @@ module.exports = {
 
             await sendEmail(email, CREATE_USER, {userName: name});
 
+            console.log('str84');
             if (!req.file) {
                 return next(new ApiError('Upload at least one picture', 400));
 
             } else {
-
-                const newImage = new User({
-                    ...req.body, password: hashPassword,
-                    image: {
-                        data: req.file.filename,
-                        link: `http://localhost:5000/photos/${req.file.filename}`
-                    }
-                })
+                   const newImage = new User({
+                        ...req.body, password: hashPassword,
+                        image: {
+                            data: req.file.filename,
+                            link: `http://localhost:5000/photos/${req.file.filename}`
+                        }
+                    })
                 newImage.save()
                     .then(() => res.send('successfully uploaded'))
                     .catch(err => next(new ApiError(err, 400)))

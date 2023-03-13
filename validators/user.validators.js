@@ -17,7 +17,7 @@ const newUserValidator = Joi.object({
     contact_number: numberValidator.required(),
     age: ageValidator,
     email: emailValidator.required(),
-    status: Joi.string(),
+    status: Joi.string().valid('regular', 'admin').required(),
     password: passValidator.required(),
     testImage: imageValidator
 })
