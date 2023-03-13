@@ -1,17 +1,18 @@
 const Joi = require('joi');
+const {ApiError} = require("../errors");
 
 const brandValidator = Joi.string().min(2).max(30).valid().trim(); //todo
 const modelValidator = Joi.string().min(2).max(30).trim();
 const yearValidator = Joi.number().min(1960).max(new Date().getFullYear());
 const descriptionValidator = Joi.string().min(10).trim();
 const minAgeValidator = Joi.number().min(18).max(85)
-const priceValidator = Joi.number();
-const rentValidator = Joi.number();
+const priceValidator = Joi.number().positive();
+const rentValidator = Joi.number().positive();
 const locationValidator = Joi.string().valid('London', 'Birmingham', 'Manchester', 'Leeds', 'Sheffield', 'Liverpool', 'Bristol', 'Wakefield');
 const imageValidator = Joi.any()
 const booleanValidator = Joi.boolean();
 const stringValidator = Joi.string();
-const numberValidator = Joi.number();
+const numberValidator = Joi.number().positive().error(new ApiError('Number has to be positive', 400));
 
 const newCarValidator = Joi.object({
     brand: brandValidator.required(),

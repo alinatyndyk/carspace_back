@@ -23,6 +23,23 @@ module.exports = {
             const orders = await orderCarService.getCarOrdersByParams({car: car_id});
             const {from_date, to_date} = req.body;
 
+            const fromDate = new Date(from_date).getTime();
+            const toDate = new Date(to_date).getTime();
+
+            if(fromDate < new Date().getTime()){
+                next(new ApiError('The starting date must start from today'))
+            }
+            if(toDate < fromDate){
+                next(new ApiError('The ending date must be greater than the starting date'))
+            }
+
+            const Difference_In_Time = new Date(toDate).getTime() - new Date(fromDate).getTime();
+            const Difference_In_Days = Difference_In_Time / (1000 * 3600 * 24);
+
+            if(Difference_In_Days > 120){
+                next(new ApiError('You are not allowed to make orders for more than 4 month', 400))
+            }
+
             const getDaysArray = function (s, e) {
                 for (a = [], d = new Date(s); d <= new Date(e); d.setDate(d.getDate() + 1)) {
                     a.push(new Date(d));

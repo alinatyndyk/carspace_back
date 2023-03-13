@@ -8,7 +8,7 @@ const lastnameValidator = Joi.string().alphanum().min(2).max(35).trim();
 const ageValidator = Joi.number().integer().min(18).max(120);
 const emailValidator = Joi.string().regex(EMAIL).lowercase().trim().error(new ApiError('Email not valid', 400));
 const passValidator = Joi.string().regex(PASSWORD).error(new ApiError('Password not valid (Accepts the letters and numbers with minimum 8 lengths)'));
-const numberValidator = Joi.string().regex(NUMBER).error(new ApiError('Number not valid', 400))
+const numberValidator = Joi.string().regex(NUMBER).error(new ApiError('The phone number is not valid. Valid formats: (123) 456-7890,  (123)456-7890,  123-456-7890,  1234567890,  +31636363634', 400))
 const imageValidator = Joi.any()
 
 const newUserValidator = Joi.object({

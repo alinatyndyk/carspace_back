@@ -33,7 +33,7 @@ module.exports = {
 
             next();
         } catch (e) {
-            next(e)
+            next(e);
         }
     },
 
@@ -51,8 +51,7 @@ module.exports = {
             next();
 
         } catch (e) {
-            console.log(e);
-            next(e)
+            next(e);
         }
     },
 

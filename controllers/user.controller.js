@@ -97,7 +97,7 @@ module.exports = {
                 })
                 newImage.save()
                     .then(() => res.send('successfully uploaded'))
-                    .catch(err => console.log(err))
+                    .catch(err => next(new ApiError(err, 400)))
             }
         })
     },
